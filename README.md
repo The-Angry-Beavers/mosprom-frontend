@@ -1,2 +1,3 @@
-SERVER_URL=''
-APP_DOMIAN=localhost
+SERVER_URL= бекенд 
+
+APP_DOMIAN= домен (локально localhost)
