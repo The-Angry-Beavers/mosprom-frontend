@@ -21,3 +21,13 @@ body {
   scroll-behavior: smooth;
   overflow-x: hidden;
 }
+
+a {
+  color: #002664;
+
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

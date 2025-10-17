@@ -1,4 +1,4 @@
-import { Home, Login, Register } from '@/pages';
+import { Home, LoginPage, RegisterPage } from '@/pages';
 import { ROUTES } from '@/shared/config/routes';
 import { Layout } from '@/shared/ui';
 import { Sidebar } from '@/widgets/sidebar';
@@ -11,8 +11,8 @@ function App() {
         <Route path={ROUTES.HOME} element={<Home />} />
         <Route path={ROUTES.NOT_FOUND} element={<Home />} />
       </Route>
-      <Route path={ROUTES.LOGIN} element={<Login />} />
-      <Route path={ROUTES.REGISTER} element={<Register />} />
+      <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+      <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
     </Routes>
   );
 }
