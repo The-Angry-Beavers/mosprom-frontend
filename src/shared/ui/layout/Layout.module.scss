@@ -1,6 +1,11 @@
 .layout {
   min-height: 100vh;
 
+  .sider {
+    border-right: solid 1px #002664;
+	background: white;
+  }
+
   .content {
     padding: 20px 30px;
   }

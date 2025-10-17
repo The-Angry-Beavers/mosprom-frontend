@@ -1,0 +1,37 @@
+.menuContainer {
+  padding: 2rem 0;
+  .menuAvatarLabel {
+    color: #002664;
+	font-weight: 500;
+	font-size: 1rem;
+	.menuAvatarLogout {
+		font-size: 0.825rem;
+		cursor: pointer;
+	}
+  }
+  .menu {
+    width: 100%;
+    .ant-menu-submenu-title span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 100px;
+    }
+	.ant-menu-item {
+		padding: 0;
+	}
+    .ant-menu-item:not(.ant-menu-item-selected) {
+      opacity: 0.8;
+    }
+    .ant-menu-item.ant-menu-item-selected {
+      background: #fff;
+      font-weight: 500;
+      color: #002664;
+      transition: color 0.2s ease-in;
+      svg {
+        scale: 1.1;
+        transition: scale 0.2s ease-in;
+      }
+    }
+  }
+}

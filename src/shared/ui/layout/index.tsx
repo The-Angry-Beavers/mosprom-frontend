@@ -9,7 +9,7 @@ type Props = {
 export const Layout = ({ sidebar }: Props) => {
   return (
     <AntLayout className={css.layout}>
-      <AntLayout.Sider>{sidebar}</AntLayout.Sider>
+      <AntLayout.Sider className={css.sider}>{sidebar}</AntLayout.Sider>
       <AntLayout.Content className={css.content}>
         <Outlet />
       </AntLayout.Content>
