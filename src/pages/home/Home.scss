@@ -8,8 +8,9 @@
 .homeBackground {
 	background-image: url("src/shared/assets/fon.png");
 	background-repeat: no-repeat;
-	background-size: cover;
+	background-size: 100% 250px;
 	height: 250px;
+	background-position: bottom;
 	position: absolute;
 	width: 100%;
 	left: 0;

@@ -67,7 +67,7 @@ export const CreateTableModal = ({
 
         <Flex gap={20} vertical>
           <Form.Item<CreateTableType>
-            label="Имя таблицы"
+            label="Название таблицы"
             name="name"
             rules={[
               { required: true, message: 'Пожалуйста введите имя таблицы' },
