@@ -16,7 +16,6 @@ type Props = {
   isModalOpen: boolean;
   handleOk: () => void;
   handleCancel: () => void;
-  namespaceValue: string;
 };
 
 const props: UploadProps = {
@@ -46,7 +45,6 @@ export const CreateTableModal = ({
   handleCancel,
   handleOk,
   isModalOpen,
-  namespaceValue,
 }: Props) => {
   return (
     <Modal
