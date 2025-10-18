@@ -1,7 +1,7 @@
 export const mainTheme = {
   token: {
     colorBgContainer: "#fff",
-    colorBgLayout: "#fff",
+    colorBgLayout: "#F6FAFF",
 	fontFamily: "RobotoMono, sans-serif",
 	borderRadiusSM: 14,
 	borderRadius: 4,

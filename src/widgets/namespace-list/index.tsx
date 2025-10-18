@@ -14,6 +14,7 @@ export const NamespaceList = ({ items }: Props) => {
           <NamespaceCard namespace={item} />
         </Link>
       ))}
+	   <NamespaceCard namespace={{ id: 0, name: 'Добавить проект' }} addCard />
     </div>
   );
 };

@@ -1,0 +1,17 @@
+.homeTitle {
+	color: white;
+	font-weight: 600;
+	font-size: 3rem;
+	position: relative;
+}
+
+.homeBackground {
+	background-image: url("src/shared/assets/fon.png");
+	background-repeat: no-repeat;
+	background-size: cover;
+	height: 250px;
+	position: absolute;
+	width: 100%;
+	left: 0;
+	top: 0;
+}

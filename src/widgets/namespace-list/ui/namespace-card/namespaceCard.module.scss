@@ -1,13 +1,17 @@
 .card {
-  transition: box-shadow 0.2s ease-in;
   border-radius: 5px;
-  border: 1px solid rgba(#002664, 0.5);
+  height: 200px;
+  width: 240px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 6px 16px -8px #00000014, 0 9px 28px #0000000d,
+    0 12px 48px 16px #00000008;
+  cursor: pointer;
+  transition: scale 0.35s ease-in;
 
   &:hover {
-    cursor: pointer;
-
-    box-shadow: 0 6px 16px -8px #00000014, 0 9px 28px #0000000d, 0 12px 48px 16px #00000008;
-
+    scale: 1.01;
     .name {
       color: #002664;
     }

@@ -1,16 +1,21 @@
-import type { NamespaceType } from '@/entity';
-import { Card, Flex } from 'antd';
-import css from './namespaceCard.module.scss';
-import { FolderOutlined } from '@ant-design/icons';
+import type { NamespaceType } from "@/entity";
+import { Card, Flex } from "antd";
+import css from "./namespaceCard.module.scss";
+import { FolderOutlined, PlusOutlined } from "@ant-design/icons";
 type Props = {
   namespace: NamespaceType;
+  addCard?: boolean;
 };
 
-export const NamespaceCard = ({ namespace }: Props) => {
+export const NamespaceCard = ({ namespace, addCard }: Props) => {
   return (
     <Card className={css.card}>
-      <Flex gap={5} align="center">
-        <FolderOutlined className={css.icon} />
+      <Flex gap={5} align="center" justify="center">
+        {addCard ? (
+          <PlusOutlined className={css.icon} />
+        ) : (
+          <FolderOutlined className={css.icon} />
+        )}
         <p className={css.name}>{namespace.name}</p>
       </Flex>
     </Card>

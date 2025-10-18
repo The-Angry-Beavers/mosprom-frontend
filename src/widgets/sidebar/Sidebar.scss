@@ -1,14 +1,20 @@
 .menuContainer {
   padding: 2rem 0;
   padding-right: 0.5rem;
+
+  .menuAvatarContainer {
+    padding-left: 1.5rem;
+  }
+
   .menuAvatarLabel {
     color: #002664;
-	font-weight: 500;
-	font-size: 1rem;
-	.menuAvatarLogout {
-		font-size: 0.825rem;
-		cursor: pointer;
-	}
+    font-weight: 600;
+    font-size: 1rem;
+    .menuAvatarLogout {
+      font-size: 0.725rem;
+	  font-weight: 400;
+      cursor: pointer;
+    }
   }
   .menu {
     width: 100%;
@@ -16,11 +22,17 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      max-width: 150px;
+      max-width: 200px;
     }
-	.ant-menu-item {
-		padding: 0;
-	}
+    .ant-menu-item {
+      padding: 0;
+    }
+
+    .ant-menu-title-content {
+      a {
+        text-decoration: none;
+      }
+    }
     .ant-menu-item:not(.ant-menu-item-selected) {
       opacity: 0.8;
     }

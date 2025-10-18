@@ -4,5 +4,5 @@ export const ROUTES = {
   LOGIN: '/login',
   REGISTER: '/register',
   NAMESPACE: '/namespace/:namespaceId',
-  NAMESPACE_TABLE: '/namespace/:namespaceID/:tableId',
+  NAMESPACE_TABLE: '/table/:tableId',
 };

@@ -2,8 +2,11 @@
   min-height: 100vh;
 
   .sider {
-    border-right: solid 1px #002664;
-	background: white;
+    box-shadow: 0 6px 16px -8px #00000005, 0 9px 28px #0000000a,
+      0 12px 48px 16px #00000005;
+    background: white;
+    border-radius: 0 24px 24px 0;
+	z-index: 200;
   }
 
   .content {

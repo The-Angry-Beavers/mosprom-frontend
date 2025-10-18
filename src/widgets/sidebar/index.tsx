@@ -1,6 +1,7 @@
 import { type MenuProps, Avatar, Flex, Menu } from "antd";
 import "./Sidebar.scss";
 import {
+	HomeOutlined,
   LogoutOutlined,
   ProjectOutlined,
   TableOutlined,
@@ -16,7 +17,23 @@ const items2: MenuProps["items"] = [
         onClick={(e) => {
           e.stopPropagation();
         }}
-        to="/login"
+        to="/"
+        title="Главная"
+      >
+        Главная
+      </Link>
+    ),
+    title: "Главная",
+    icon: <HomeOutlined />,
+  },
+  {
+    key: `sub`,
+    label: (
+      <Link
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+        to="/namespace/1"
         title="Проект 1"
       >
         "Проект 1"
@@ -32,7 +49,7 @@ const items2: MenuProps["items"] = [
         onClick={(e) => {
           e.stopPropagation();
         }}
-        to="/login"
+        to="/namespace/2"
         title="Проект 2 с очень длинным названием с очень длинным названием с очень
         длинным названием"
       >
@@ -46,19 +63,19 @@ const items2: MenuProps["items"] = [
     children: [
       {
         key: `тАБЛИЦА1`,
-        label: `тАБЛИЦА1`,
+        label: <Link to="/table/1">`тАБЛИЦА1`</Link>,
         title: `тАБЛИЦА1`,
         icon: <TableOutlined />,
       },
       {
         key: `тАБЛИЦА2`,
-        label: `тАБЛИЦА2`,
+        label: <Link to="/table/2">`тАБЛИЦА2`</Link>,
         title: `тАБЛИЦА2`,
         icon: <TableOutlined />,
       },
       {
         key: `тАБЛИЦА3`,
-        label: `тАБЛИЦА3`,
+        label: <Link to="/table/3">`тАБЛИЦА3`</Link>,
         title: `тАБЛИЦА3`,
         icon: <TableOutlined />,
       },
@@ -75,13 +92,12 @@ export const Sidebar = () => {
       vertical
       className={"menuContainer"}
       justify="center"
-      align="center"
       gap={42}
     >
-      <Flex align="center" gap={6}>
+      <Flex align="center" gap={6} className="menuAvatarContainer">
         <Avatar size={60} src="https://placecats.com/300/200" />
         <Flex vertical className="menuAvatarLabel" gap={6}>
-          <span>Имя фамилия</span>
+          <span style={{ cursor: "default" }}>Имя фамилия</span>
           <Flex
             onClick={() => {
               logout();
