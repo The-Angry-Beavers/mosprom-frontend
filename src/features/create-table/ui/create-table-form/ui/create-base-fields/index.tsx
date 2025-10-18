@@ -1,18 +1,16 @@
 import type { CreateTableType } from '@/entity';
-import { Form, Input, Flex, Button } from 'antd';
+import { Form, Input, Flex, Button, type FormInstance } from 'antd';
 import css from './createBaseFields.module.scss';
 type Props = {
   nextStep: () => void;
+  form: FormInstance<CreateTableType>;
 };
 
-export const CreateBaseFields = ({ nextStep }: Props) => {
+export const CreateBaseFields = ({ nextStep, form }: Props) => {
+
   return (
     <div className={css.createBaseFields}>
-      <Form.Item<CreateTableType>
-        label="Пространство"
-        name="namespace"
-        rules={[{ required: true, message: 'Пожалуйста введите пространство' }]}
-      >
+      <Form.Item<CreateTableType> label="Пространство" name="namespace">
         <Input disabled type="text" size="large" />
       </Form.Item>
 
@@ -27,10 +25,19 @@ export const CreateBaseFields = ({ nextStep }: Props) => {
           <Input size="large" />
         </Form.Item>
 
-        <Form.Item>
-          <Button onClick={nextStep} block type="primary" size="large">
-            Далее
-          </Button>
+        <Form.Item shouldUpdate>
+          {() => (
+            <Button
+              disabled={!form.getFieldValue('name')}
+              onClick={nextStep}
+              block
+              type="primary"
+              size="large"
+              htmlType="submit"
+            >
+              Далее
+            </Button>
+          )}
         </Form.Item>
       </Flex>
     </div>

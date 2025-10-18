@@ -18,7 +18,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { Activity, useState } from 'react';
+import { useState } from 'react';
 
 import {
   arrayMove,
@@ -99,8 +99,9 @@ const SortableColumn: React.FC<SortableColumnProps> = ({
 };
 
 export const CreateColumnsFields = ({ nextStep, form }: Props) => {
-  const [columns, setColumns] = useState<FieldType[]>([]);
-  const [choices, setChoices] = useState<string[]>([]);
+  const [columns, setColumns] = useState<FieldType[]>(
+    form.getFieldValue('fields') || []
+  );
   const [selectField, setSelectField] = useState<FieldType | null>(null);
 
   const sensors = useSensors(
@@ -142,8 +143,6 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
   };
 
   const handleDeleteColumn = (id: number) => {
-    if (columns.length === 1) return;
-
     const newList = columns.filter((f) => f.id !== id);
     setColumns(newList);
     form.setFieldsValue({ fields: newList });
@@ -218,14 +217,12 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
                   >
                     {columns.map((col, index) => {
                       return (
-                        <>
-                          <SortableColumn
-                            onClick={() => setSelectField(col)}
-                            onHandleDelete={() => handleDeleteColumn(col.id)}
-                            key={col.id}
-                            item={col}
-                          />
-                        </>
+                        <SortableColumn
+                          onClick={() => setSelectField(col)}
+                          onHandleDelete={() => handleDeleteColumn(col.id)}
+                          key={col.id}
+                          item={col}
+                        />
                       );
                     })}
                   </SortableContext>
@@ -299,16 +296,16 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
                       <p>Выборы</p>
                       <Flex gap={10} vertical>
                         {selectField.choices.map((choice, index) => {
-                        return (
-                          <Input
-                            key={index}
-                            value={choice}
-                            onChange={(e) =>
-                              handleChoiceChange(index, e.target.value)
-                            }
-                          />
-                        );
-                      })}
+                          return (
+                            <Input
+                              key={index}
+                              value={choice}
+                              onChange={(e) =>
+                                handleChoiceChange(index, e.target.value)
+                              }
+                            />
+                          );
+                        })}
                       </Flex>
                       <Button
                         icon={<PlusOutlined />}

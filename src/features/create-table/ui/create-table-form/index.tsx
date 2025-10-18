@@ -14,15 +14,12 @@ export const CreateTableForm = () => {
 
   return (
     <Form layout="vertical" form={form} onFinish={onFinish}>
-      {step === 0 && (
-        <CreateBaseFields nextStep={() => setStep((prev) => prev + 1)} />
-      )}
-      {step === 1 && (
-        <CreateColumnsFields
-          form={form}
-          nextStep={() => setStep((prev) => prev - 1)}
-        />
-      )}
+      <div style={{ display: step === 0 ? 'block' : 'none' }}>
+        <CreateBaseFields form={form} nextStep={() => setStep(step + 1)} />
+      </div>
+      <div style={{ display: step === 1 ? 'block' : 'none' }}>
+        <CreateColumnsFields form={form} nextStep={() => setStep(step - 1)} />
+      </div>
     </Form>
   );
 };
