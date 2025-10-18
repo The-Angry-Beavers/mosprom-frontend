@@ -1,5 +1,6 @@
 import { Button, Flex, Form, Input, type FormProps } from "antd";
 import type { RegisterFormType } from "../../model/type";
+import { LockOutlined, MailOutlined, ProfileOutlined } from "@ant-design/icons";
 
 export const RegisterForm = () => {
   const [form] = Form.useForm();
@@ -24,7 +25,7 @@ export const RegisterForm = () => {
           },
         ]}
       >
-        <Input type="email" size="large" />
+        <Input type="email" size="large" prefix={<MailOutlined />} />
       </Form.Item>
 
       <Form.Item<RegisterFormType>
@@ -32,7 +33,7 @@ export const RegisterForm = () => {
         name="name"
         rules={[{ required: true, message: "Пожалуйста введите имя" }]}
       >
-        <Input size="large" />
+        <Input size="large" prefix={<ProfileOutlined />} />
       </Form.Item>
       <Flex vertical gap={20}>
         <Form.Item<RegisterFormType>
@@ -43,7 +44,7 @@ export const RegisterForm = () => {
             { min: 8, message: "Пароль должен быть не менее 8 символов" },
           ]}
         >
-          <Input.Password size="large" />
+          <Input.Password size="large" prefix={<LockOutlined />} />
         </Form.Item>
 
         <Form.Item label={null}>

@@ -1,6 +1,6 @@
-import { API_URL } from '@/shared/config/apiUrl';
-import { axiosClassic } from '../../api';
-import { saveTokenStorage, removeFromStorage } from './authToken.service';
+import { API_URL } from "@/shared/config/apiUrl";
+import { axiosClassic } from "../../api";
+import { saveTokenStorage, removeFromStorage } from "./authToken.service";
 
 export interface IUser {
   id: string;
@@ -18,10 +18,10 @@ export interface IAuthResponse {
 }
 
 class AuthService {
-  async main(type: 'login' | 'register', data: IAuthForm) {
+  async main(type: "login" | "register", data: IAuthForm) {
     const response = await axiosClassic<IAuthResponse>({
       url: API_URL.auth(`/${type}`),
-      method: 'POST',
+      method: "POST",
       data,
     });
 
@@ -34,8 +34,8 @@ class AuthService {
 
   async getNewTokens() {
     const response = await axiosClassic<IAuthResponse>({
-      url: API_URL.auth('login/access-token'),
-      method: 'GET',
+      url: API_URL.auth("login/access-token"),
+      method: "GET",
     });
 
     if (response.data.accessToken) {
@@ -45,15 +45,8 @@ class AuthService {
     return response;
   }
 
-  async logout() {
-    const response = await axiosClassic<boolean>({
-      url: API_URL.auth('logout'),
-      method: 'POST',
-    });
-
-    if (response.data) removeFromStorage();
-
-    return response;
+  logout() {
+    removeFromStorage();
   }
 }
 

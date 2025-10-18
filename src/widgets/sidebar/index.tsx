@@ -1,14 +1,14 @@
-import { type MenuProps, Avatar, Flex, Menu } from 'antd';
-import './Sidebar.scss';
+import { type MenuProps, Avatar, Flex, Menu } from "antd";
+import "./Sidebar.scss";
 import {
   LogoutOutlined,
   ProjectOutlined,
   TableOutlined,
-} from '@ant-design/icons';
-import { Link } from 'react-router-dom';
-import { useLogout } from './lib/useLogout';
+} from "@ant-design/icons";
+import { Link, useNavigate } from "react-router-dom";
+import { useLogout } from "./lib/useLogout";
 
-const items2: MenuProps['items'] = [
+const items2: MenuProps["items"] = [
   {
     key: `sub`,
     label: (
@@ -22,7 +22,7 @@ const items2: MenuProps['items'] = [
         "Проект 1"
       </Link>
     ),
-    title: 'Проект 1',
+    title: "Проект 1",
     icon: <ProjectOutlined />,
   },
   {
@@ -41,7 +41,7 @@ const items2: MenuProps['items'] = [
       </Link>
     ),
     title:
-      'Проект 2 с очень длинным названием с очень длинным названием с очень длинным названием',
+      "Проект 2 с очень длинным названием с очень длинным названием с очень длинным названием",
     icon: <ProjectOutlined />,
     children: [
       {
@@ -68,11 +68,12 @@ const items2: MenuProps['items'] = [
 
 export const Sidebar = () => {
   const { logout } = useLogout();
+  const navigate = useNavigate();
 
   return (
     <Flex
       vertical
-      className={'menuContainer'}
+      className={"menuContainer"}
       justify="center"
       align="center"
       gap={42}
@@ -82,7 +83,10 @@ export const Sidebar = () => {
         <Flex vertical className="menuAvatarLabel" gap={6}>
           <span>Имя фамилия</span>
           <Flex
-            onClick={() => logout()}
+            onClick={() => {
+              logout();
+              navigate("/login");
+            }}
             role="button"
             gap={4}
             className="menuAvatarLogout"
@@ -94,10 +98,10 @@ export const Sidebar = () => {
       </Flex>
       <Menu
         mode="inline"
-        defaultSelectedKeys={['1']}
-        defaultOpenKeys={['sub1']}
-        className={'menu'}
-        style={{ height: '100%', borderInlineEnd: 0 }}
+        defaultSelectedKeys={["1"]}
+        defaultOpenKeys={["sub1"]}
+        className={"menu"}
+        style={{ height: "100%", borderInlineEnd: 0 }}
         items={items2}
       />
     </Flex>
