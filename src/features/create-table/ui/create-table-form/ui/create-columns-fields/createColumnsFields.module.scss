@@ -16,6 +16,7 @@
   .field {
     overflow: hidden;
     width: 100%;
+	box-shadow: 4px 4px 8px 0px rgba(34, 60, 80, 0.2);
 
     &_name {
       width: 230px;
@@ -37,5 +38,12 @@
         color: red;
       }
     }
+  }
+
+  .separator {
+	margin: -24px 0 -4px 0;
+	color: #002664;
+	opacity: 0.5;
+	padding: 0;
   }
 }

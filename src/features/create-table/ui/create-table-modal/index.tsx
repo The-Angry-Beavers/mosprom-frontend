@@ -1,17 +1,19 @@
-import { Modal } from 'antd';
+import { Modal } from "antd";
 
-import { CreateTableForm } from '../create-table-form';
+import { CreateTableForm } from "../create-table-form";
 
 type Props = {
   isModalOpen: boolean;
   handleOk: () => void;
   handleCancel: () => void;
+  namespace: string;
 };
 
 export const CreateTableModal = ({
   handleCancel,
   handleOk,
   isModalOpen,
+  namespace,
 }: Props) => {
   return (
     <Modal
@@ -22,7 +24,7 @@ export const CreateTableModal = ({
       footer={null}
       width={700}
     >
-      <CreateTableForm />
+      <CreateTableForm namespace={namespace} />
     </Modal>
   );
 };

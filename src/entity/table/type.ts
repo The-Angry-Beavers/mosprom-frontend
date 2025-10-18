@@ -42,4 +42,5 @@ export type CreateTableType = {
   namespace: string;
   name: string;
   fields: FieldType[];
+  templateId: number;
 };
