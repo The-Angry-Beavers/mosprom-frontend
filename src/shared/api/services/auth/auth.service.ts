@@ -18,9 +18,9 @@ export interface IAuthResponse {
 }
 
 class AuthService {
-  async main(type: "login" | "register", data: IAuthForm) {
+  async register( data: IAuthForm) {
     const response = await axiosClassic<IAuthResponse>({
-      url: API_URL.auth(`/${type}`),
+      url: API_URL.register(),
       method: "POST",
       data,
     });
@@ -32,10 +32,11 @@ class AuthService {
     return response;
   }
 
-  async getNewTokens() {
+   async login( data: IAuthForm) {
     const response = await axiosClassic<IAuthResponse>({
-      url: API_URL.auth("login/access-token"),
-      method: "GET",
+      url: API_URL.login(),
+      method: "POST",
+      data,
     });
 
     if (response.data.accessToken) {
@@ -44,6 +45,7 @@ class AuthService {
 
     return response;
   }
+
 
   logout() {
     removeFromStorage();

@@ -24,7 +24,9 @@ class TableService {
       dto
     );
   }
-  async getTable(id: string) {}
+  async getTable(id: string) {
+    return await axiosClassic.get<TableType>(API_URL.tables(`/${id}`));
+  }
 }
 
 export const tableService = new TableService();

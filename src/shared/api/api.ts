@@ -28,8 +28,6 @@ axiosWithAuth.interceptors.request.use((config) => {
 axiosWithAuth.interceptors.request.use(
   (config) => config,
   async (error) => {
-    const originalRequest = error.config;
-
     if (
       (error?.response?.status === 401 ||
         errorCatch(error) === 'jwt expired' ||
@@ -37,20 +35,9 @@ axiosWithAuth.interceptors.request.use(
       error.config &&
       !error.config._isRetry
     ) {
-      originalRequest._isRetry = true;
-      try {
-        await authService.getNewTokens();
+      removeFromStorage();
 
-        return axiosWithAuth.request(originalRequest);
-      } catch (error) {
-        if (errorCatch(error) === 'jwt expired') {
-          removeFromStorage();
-
-          window.location.href = API_URL.auth('/login');
-        }
-      }
-
-      throw error;
+      window.location.href = '/auth';
     }
   }
 );

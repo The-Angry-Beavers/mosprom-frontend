@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 import {
   Table,
   Input,
@@ -12,21 +12,22 @@ import {
   Upload,
   Modal,
   Space,
-} from "antd";
-import dayjs from "dayjs";
+} from 'antd';
+import dayjs from 'dayjs';
 import {
   DeleteOutlined,
   PlusOutlined,
   UploadOutlined,
-} from "@ant-design/icons";
-import * as XLSX from "xlsx";
+} from '@ant-design/icons';
+import * as XLSX from 'xlsx';
+import type { FieldType, RowType } from '@/entity';
 
 const initialTablerows = {
   total: 1,
   rows: [
     {
       id: 1,
-      values: [{ field_id: 0, type: "int", value: 42 }],
+      values: [{ field_id: 0, type: 'int', value: 42 }],
     },
   ],
 };
@@ -34,62 +35,65 @@ const initialTablerows = {
 const initialTablecolumns = [
   {
     id: 0,
-    name: "test_table",
+    name: 'test_table',
     fields: [
       {
         id: 0,
-        name: "age",
-        verbose_name: "Возраст",
-        data_type: "int",
+        name: 'age',
+        verbose_name: 'Возраст',
+        data_type: 'int',
         is_nullable: true,
-        default_value: "",
+        default_value: '',
         choices: [],
       },
-	   {
+      {
         id: 2,
-        name: "age2",
-        verbose_name: "Возраст222",
-        data_type: "string",
+        name: 'age2',
+        verbose_name: 'Возраст222',
+        data_type: 'string',
         is_nullable: true,
-        default_value: "",
+        default_value: '',
         choices: [],
       },
       {
         id: 1,
-        name: "status",
-        verbose_name: "Статус",
-        data_type: "string",
-        choices: ["Active", "Inactive"],
+        name: 'status',
+        verbose_name: 'Статус',
+        data_type: 'string',
+        choices: ['Active', 'Inactive'],
       },
       {
         id: 2,
-        name: "is_admin",
-        verbose_name: "Админ",
-        data_type: "bool",
+        name: 'is_admin',
+        verbose_name: 'Админ',
+        data_type: 'bool',
       },
       {
         id: 3,
-        name: "birthday",
-        verbose_name: "Дата рождения",
-        data_type: "datetime",
+        name: 'birthday',
+        verbose_name: 'Дата рождения',
+        data_type: 'datetime',
       },
     ],
   },
 ];
+type Props = {
+  rowsData: RowType[];
+  columnsData: FieldType[];
+  canEdit: boolean;
+};
 
-export const TablePage = () => {
+export const TablePage = ({ columnsData, rowsData }: Props) => {
   const [rows, setRows] = useState(initialTablerows.rows);
   const fields = initialTablecolumns[0].fields;
   const [history, setHistory] = useState<any[]>([]);
   const [redoStack, setRedoStack] = useState<any[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
 
-
   const [uploadedHeaders, setUploadedHeaders] = useState<string[]>([]);
   const [uploadedData, setUploadedData] = useState<any[]>([]);
   const [mapping, setMapping] = useState<Record<string, string>>({});
   const [isMappingModalOpen, setIsMappingModalOpen] = useState(false);
-
 
   const pushHistory = useCallback(
     (newRows: any) => {
@@ -102,7 +106,7 @@ export const TablePage = () => {
 
   const undo = useCallback(() => {
     if (history.length === 0)
-      return messageApi.open({ type: "info", content: "Нечего отменять" });
+      return messageApi.open({ type: 'info', content: 'Нечего отменять' });
     const prev = history[history.length - 1];
     setRedoStack((r) => [JSON.parse(JSON.stringify(rows)), ...r]);
     setHistory((h) => h.slice(0, -1));
@@ -111,7 +115,7 @@ export const TablePage = () => {
 
   const redo = useCallback(() => {
     if (redoStack.length === 0)
-      return messageApi.open({ type: "info", content: "Нечего вернуть" });
+      return messageApi.open({ type: 'info', content: 'Нечего вернуть' });
     const next = redoStack[0];
     setHistory((h) => [...h, JSON.parse(JSON.stringify(rows))]);
     setRedoStack((r) => r.slice(1));
@@ -121,20 +125,19 @@ export const TablePage = () => {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       const isCtrl = e.ctrlKey || e.metaKey;
-      if (isCtrl && e.code === "KeyZ") {
+      if (isCtrl && e.code === 'KeyZ') {
         e.preventDefault();
         undo();
       }
-      if (isCtrl && e.code === "KeyY") {
+      if (isCtrl && e.code === 'KeyY') {
         e.preventDefault();
         redo();
       }
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [undo, redo]);
-
 
   const handleValueChange = (rowId: number, fieldId: number, newValue: any) => {
     const newRows = rows.map((r) =>
@@ -158,11 +161,11 @@ export const TablePage = () => {
         field_id: f.id,
         type: f.data_type,
         value:
-          f.data_type === "bool"
+          f.data_type === 'bool'
             ? false
-            : f.data_type === "datetime"
+            : f.data_type === 'datetime'
             ? null
-            : f.default_value || "",
+            : f.default_value || '',
       })),
     };
     pushHistory([...rows, newRow]);
@@ -179,20 +182,20 @@ export const TablePage = () => {
         const excelHeader = Object.keys(mapping).find(
           (key) => mapping[key] === f.name
         );
-        const colIndex = uploadedHeaders.indexOf(excelHeader || "");
+        const colIndex = uploadedHeaders.indexOf(excelHeader || '');
         const rawValue =
-          colIndex !== -1 ? rowArr[colIndex] ?? "" : f.default_value ?? "";
+          colIndex !== -1 ? rowArr[colIndex] ?? '' : f.default_value ?? '';
 
         let parsedValue = rawValue;
-        if (f.data_type === "int" || f.data_type === "float")
+        if (f.data_type === 'int' || f.data_type === 'float')
           parsedValue = Number(rawValue) || 0;
-        if (f.data_type === "bool")
+        if (f.data_type === 'bool')
           parsedValue =
             rawValue === true ||
-            rawValue === "true" ||
-            rawValue === "1" ||
-            rawValue === "да";
-        if (f.data_type === "datetime" && rawValue)
+            rawValue === 'true' ||
+            rawValue === '1' ||
+            rawValue === 'да';
+        if (f.data_type === 'datetime' && rawValue)
           parsedValue = dayjs(rawValue).toISOString();
 
         return { field_id: f.id, type: f.data_type, value: parsedValue };
@@ -202,26 +205,25 @@ export const TablePage = () => {
     pushHistory([...rows, ...mapped]);
     setIsMappingModalOpen(false);
     messageApi.open({
-      type: "success",
-      content: "Данные успешно импортированы",
+      type: 'success',
+      content: 'Данные успешно импортированы',
     });
   };
-
 
   const renderEditor = (field: any, row: any) => {
     const cell = row.values.find((v: any) => v.field_id === field.id);
     const value = cell?.value;
 
     switch (field.data_type) {
-      case "int":
+      case 'int':
         return (
           <InputNumber
             value={value}
             onChange={(v) => handleValueChange(row.id, field.id, v)}
-            style={{ width: "100%" }}
+            style={{ width: '100%' }}
           />
         );
-      case "string":
+      case 'string':
         if (field.choices?.length) {
           return (
             <Select
@@ -231,7 +233,7 @@ export const TablePage = () => {
                 label: c,
                 value: c,
               }))}
-              style={{ width: "100%" }}
+              style={{ width: '100%' }}
             />
           );
         }
@@ -243,7 +245,7 @@ export const TablePage = () => {
             }
           />
         );
-      case "bool":
+      case 'bool':
         return (
           <Checkbox
             checked={!!value}
@@ -252,14 +254,14 @@ export const TablePage = () => {
             }
           />
         );
-      case "datetime":
+      case 'datetime':
         return (
           <DatePicker
             value={value ? dayjs(value) : null}
             onChange={(d) =>
               handleValueChange(row.id, field.id, d ? d.toISOString() : null)
             }
-            style={{ width: "100%" }}
+            style={{ width: '100%' }}
           />
         );
       default:
@@ -275,9 +277,9 @@ export const TablePage = () => {
       render: (_: any, row: any) => renderEditor(field, row),
     })),
     {
-      title: "Действия",
-      key: "actions",
-      align: "center",
+      title: 'Действия',
+      key: 'actions',
+      align: 'center',
       width: 100,
       render: (_: any, row: any) => (
         <Button
@@ -318,7 +320,7 @@ export const TablePage = () => {
             reader.onload = (e) => {
               try {
                 const data = new Uint8Array(e.target?.result as ArrayBuffer);
-                const workbook = XLSX.read(data, { type: "array" });
+                const workbook = XLSX.read(data, { type: 'array' });
 
                 let foundHeaders = false;
                 const allSheets = workbook.SheetNames.map((sheetName) => {
@@ -331,7 +333,7 @@ export const TablePage = () => {
 
                 for (const { rows } of allSheets) {
                   for (let i = 0; i < rows.length; i++) {
-                    const row = rows[i].map((x: any) => String(x || "").trim());
+                    const row = rows[i].map((x: any) => String(x || '').trim());
                     if (row.length === 0) continue;
 
                     const matches = row.filter((cell) =>
@@ -344,7 +346,7 @@ export const TablePage = () => {
                     if (matches.length >= 2) {
                       foundHeaders = true;
                       messageApi.open({
-                        type: "success",
+                        type: 'success',
                         content: `Заголовки найдены на строке ${i + 1}`,
                       });
                       setUploadedHeaders(row);
@@ -358,8 +360,8 @@ export const TablePage = () => {
 
                 if (!foundHeaders) {
                   messageApi.open({
-                    type: "error",
-                    content: "Не удалось найти строки с заголовками в Excel",
+                    type: 'error',
+                    content: 'Не удалось найти строки с заголовками в Excel',
                   });
                 }
 
@@ -367,8 +369,8 @@ export const TablePage = () => {
               } catch (err) {
                 console.error(err);
                 messageApi.open({
-                  type: "error",
-                  content: "Ошибка при чтении Excel файла",
+                  type: 'error',
+                  content: 'Ошибка при чтении Excel файла',
                 });
               }
             };
@@ -410,7 +412,7 @@ export const TablePage = () => {
                 allowClear
                 value={mapping[h]}
                 onChange={(v) =>
-                  setMapping((prev) => ({ ...prev, [h]: v || "" }))
+                  setMapping((prev) => ({ ...prev, [h]: v || '' }))
                 }
                 options={fields.map((f) => ({
                   label: f.verbose_name,

@@ -3,7 +3,7 @@ import {
   LoginPage,
   NameSpacePage,
   RegisterPage,
-  TablePage,
+  TablePageLayout,
 } from '@/pages';
 import { ROUTES } from '@/shared/config/routes';
 import { Layout } from '@/shared/ui';
@@ -17,7 +17,7 @@ function App() {
         <Route path={ROUTES.HOME} element={<Home />} />
         <Route path={ROUTES.NOT_FOUND} element={<Home />} />
         <Route path={ROUTES.NAMESPACE} element={<NameSpacePage />} />
-        <Route path={ROUTES.NAMESPACE_TABLE} element={<TablePage />} />
+        <Route path={ROUTES.NAMESPACE_TABLE} element={<TablePageLayout />} />
       </Route>
       <Route path={ROUTES.LOGIN} element={<LoginPage />} />
       <Route path={ROUTES.REGISTER} element={<RegisterPage />} />

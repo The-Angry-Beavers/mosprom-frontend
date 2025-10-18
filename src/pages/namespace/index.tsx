@@ -78,7 +78,7 @@ export const NameSpacePage = () => {
     <div>
       <Flex align="center" justify="space-between">
         <h1 className="namespaceTitle">Тестовый проект</h1>
-        <CreateModal namespace='Тестовый проект' />
+        <CreateModal namespace="Тестовый проект" />
       </Flex>
       {isLoading && !data && (
         <Flex gap={10} vertical>
@@ -92,7 +92,7 @@ export const NameSpacePage = () => {
           dataSource={data}
           columns={columns}
           onRow={(record) => ({
-            onClick: () => navigate(`/table/${record.id}`),
+            onClick: () => navigate(`/table/${record.table_id}`),
           })}
           pagination={false}
         />
