@@ -1,1 +1,13 @@
-export type { CreateTableType } from './type';
+export type {
+  CreateTableType,
+  FieldType,
+  RowType,
+  TableType,
+  UpdateTableDto,
+} from './type';
+export {
+  useCreateTable,
+  useDeleteTable,
+  useGetAllTables,
+  useGetTable,
+} from './api';

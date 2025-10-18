@@ -1,22 +1,10 @@
-const mock = [
-  {
-    id: 1,
-    name: 'Пространство 1',
-  },
-  {
-    id: 2,
-    name: 'Пространство 2',
-  },
-];
+import { API_URL } from '@/shared/config/apiUrl';
+import { axiosClassic } from '../api';
+import type { NamespaceType } from '@/entity';
 
-//TODO сделать async
 class NamespaceService {
-  getNamespaceById(id: number) {
-    return mock[0];
-  }
-  
-  getAllNamespaces() {
-    return mock;
+  async getAllNamespaces() {
+    return await axiosClassic.get<NamespaceType[]>(API_URL.namespace(''));
   }
 }
 
