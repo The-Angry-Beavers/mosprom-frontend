@@ -11,4 +11,4 @@ export {
   useGetTable,
 } from './table';
 
-export { type UserType, useGetAllUsers, useGetMe } from './user';
+export { type IUser, useGetAllUsers, useGetMe } from './user';

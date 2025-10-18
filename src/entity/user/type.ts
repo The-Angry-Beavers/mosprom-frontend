@@ -1,4 +1,4 @@
-export type UserType = {
+export type IUser = {
   id: string;
   email: string;
   is_active: boolean;

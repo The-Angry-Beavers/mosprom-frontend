@@ -61,7 +61,6 @@ const columns: ColumnsType = [
     title: '',
     key: 'delete',
     render: (cell) => {
-      console.log(cell);
       return (
         <DeleteCell tableId={cell.table_id} cellKey={cell.key} key={cell.key} />
       );

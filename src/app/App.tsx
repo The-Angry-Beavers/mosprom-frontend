@@ -9,11 +9,18 @@ import { ROUTES } from '@/shared/config/routes';
 import { Layout } from '@/shared/ui';
 import { Sidebar } from '@/widgets/sidebar';
 import { Route, Routes } from 'react-router-dom';
+import { PrivateRoute } from './PrivateRoute';
 
 function App() {
   return (
     <Routes>
-      <Route element={<Layout sidebar={<Sidebar />} />}>
+      <Route
+        element={
+          <PrivateRoute>
+            <Layout sidebar={<Sidebar />} />
+          </PrivateRoute>
+        }
+      >
         <Route path={ROUTES.HOME} element={<Home />} />
         <Route path={ROUTES.NOT_FOUND} element={<Home />} />
         <Route path={ROUTES.NAMESPACE} element={<NameSpacePage />} />

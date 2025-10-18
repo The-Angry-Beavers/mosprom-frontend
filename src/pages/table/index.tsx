@@ -330,7 +330,6 @@ export const TablePage = ({ columnsData, rowsData }: Props) => {
                 });
 
                 const expectedHeaders = fields.map((f) => f.verbose_name);
-
                 for (const { rows } of allSheets) {
                   for (let i = 0; i < rows.length; i++) {
                     const row = rows[i].map((x: any) => String(x || '').trim());
