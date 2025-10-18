@@ -1,4 +1,7 @@
 .createColumnsFields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   .title {
     font-weight: 600;
     font-size: 18px;
@@ -15,10 +18,15 @@
     width: 100%;
 
     &_name {
+      width: 230px;
       max-width: 230px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    &_error {
+      color: red;
     }
 
     &_delete {

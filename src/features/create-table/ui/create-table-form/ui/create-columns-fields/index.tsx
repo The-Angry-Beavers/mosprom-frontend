@@ -18,7 +18,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { useState } from 'react';
+import { Activity, useState } from 'react';
 
 import {
   arrayMove,
@@ -32,6 +32,7 @@ import {
   HolderOutlined,
   PlusOutlined,
 } from '@ant-design/icons';
+import cn from 'classnames';
 
 type Props = {
   nextStep: () => void;
@@ -42,14 +43,16 @@ interface SortableColumnProps {
   item: FieldType;
   onClick?: () => void;
   onHandleDelete?: () => void;
+  isError?: boolean;
 }
 
 const SortableColumn: React.FC<SortableColumnProps> = ({
   item,
   onClick,
   onHandleDelete,
+  isError,
 }) => {
-  const { id, name } = item;
+  const { id, verbose_name } = item;
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id });
@@ -78,8 +81,11 @@ const SortableColumn: React.FC<SortableColumnProps> = ({
             {...listeners}
             onClick={(e) => e.stopPropagation()}
           />
-          <div className={css.field_name} style={{ flex: 1 }}>
-            {name}
+          <div
+            className={cn(css.field_name, { [css.field_error]: isError })}
+            style={{ flex: 1 }}
+          >
+            {verbose_name}
           </div>
         </Flex>
         <DeleteOutlined
@@ -94,6 +100,7 @@ const SortableColumn: React.FC<SortableColumnProps> = ({
 
 export const CreateColumnsFields = ({ nextStep, form }: Props) => {
   const [columns, setColumns] = useState<FieldType[]>([]);
+  const [choices, setChoices] = useState<string[]>([]);
   const [selectField, setSelectField] = useState<FieldType | null>(null);
 
   const sensors = useSensors(
@@ -105,6 +112,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
   );
 
   const handleDragEnd = (event: any) => {
+    if (columns.length === 1) return;
     const { active, over } = event;
     if (active.id !== over?.id) {
       setColumns((prev) => {
@@ -115,14 +123,13 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
         return newOrder;
       });
     }
-    console.log(form.getFieldsValue())
   };
 
   const handleAddColumn = () => {
     const newField: FieldType = {
-      id: Date.now(),
+      id: columns.length,
       name: 'Новая колонка',
-      verbose_name: '',
+      verbose_name: 'Новая колонка',
       data_type: 'string',
       is_nullable: false,
       default_value: '',
@@ -132,14 +139,16 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
     setColumns(newList);
     form.setFieldsValue({ fields: newList });
     setSelectField(newField);
-    
   };
 
   const handleDeleteColumn = (id: number) => {
+    if (columns.length === 1) return;
+
     const newList = columns.filter((f) => f.id !== id);
     setColumns(newList);
     form.setFieldsValue({ fields: newList });
     setSelectField(null);
+    console.log(form.getFieldsValue());
   };
 
   const handleFieldChange = <K extends keyof FieldType>(
@@ -155,6 +164,22 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
     );
     setColumns(updatedColumns);
     form.setFieldsValue({ fields: updatedColumns });
+  };
+
+  const handleAddChoice = () => {
+    if (!selectField) return;
+
+    const newChoices = [...selectField.choices, ''];
+    handleFieldChange('choices', newChoices as FieldType['choices']);
+  };
+
+  const handleChoiceChange = (index: number, value: string) => {
+    if (!selectField) return;
+
+    const newChoices = [...selectField.choices];
+    newChoices[index] = value;
+
+    handleFieldChange('choices', newChoices as FieldType['choices']);
   };
 
   return (
@@ -191,20 +216,25 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
                     items={columns.map((col) => col.id)}
                     strategy={verticalListSortingStrategy}
                   >
-                    {columns.map((col) => (
-                      <SortableColumn
-                        onClick={() => setSelectField(col)}
-                        onHandleDelete={() => handleDeleteColumn(col.id)}
-                        key={col.id}
-                        item={col}
-                      />
-                    ))}
+                    {columns.map((col, index) => {
+                      return (
+                        <>
+                          <SortableColumn
+                            onClick={() => setSelectField(col)}
+                            onHandleDelete={() => handleDeleteColumn(col.id)}
+                            key={col.id}
+                            item={col}
+                          />
+                        </>
+                      );
+                    })}
                   </SortableContext>
                 </DndContext>
                 <Button
                   icon={<PlusOutlined />}
                   onClick={handleAddColumn}
                   style={{ marginTop: 8 }}
+                  className={css.add_button}
                 >
                   Добавить поле
                 </Button>
@@ -215,7 +245,20 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
         <Col span={12}>
           {selectField && (
             <div className={css.fieldEditor}>
-              <Form.Item label="Имя поля">
+              <Form.Item
+                label="Имя поля"
+                name={[
+                  'fields',
+                  `${columns.findIndex((c) => c.id === selectField.id)}`,
+                  'name',
+                ]}
+                rules={[
+                  {
+                    required: true,
+                    message: 'Пожалуйста введите имя поля',
+                  },
+                ]}
+              >
                 <Input
                   value={selectField.name}
                   onChange={(e) => handleFieldChange('name', e.target.value)}
@@ -242,6 +285,43 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
                   <Select.Option value="select">select</Select.Option>
                 </Select>
               </Form.Item>
+
+              {selectField?.data_type === 'select' && (
+                <Form.List
+                  name={[
+                    'fields',
+                    `${columns.findIndex((c) => c.id === selectField.id)}`,
+                    'choices',
+                  ]}
+                >
+                  {() => (
+                    <div className={css.choices}>
+                      <p>Выборы</p>
+                      <Flex gap={10} vertical>
+                        {selectField.choices.map((choice, index) => {
+                        return (
+                          <Input
+                            key={index}
+                            value={choice}
+                            onChange={(e) =>
+                              handleChoiceChange(index, e.target.value)
+                            }
+                          />
+                        );
+                      })}
+                      </Flex>
+                      <Button
+                        icon={<PlusOutlined />}
+                        onClick={handleAddChoice}
+                        style={{ marginTop: 8 }}
+                        className={css.add_button}
+                      >
+                        Добавить выбор
+                      </Button>
+                    </div>
+                  )}
+                </Form.List>
+              )}
             </div>
           )}
         </Col>
