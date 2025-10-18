@@ -1,15 +1,17 @@
-import { type MenuProps, Avatar, Flex, Menu } from "antd";
-import "./Sidebar.scss";
+import { type MenuProps, Avatar, Flex, Menu } from 'antd';
+import './Sidebar.scss';
 import {
-	HomeOutlined,
+  HomeOutlined,
   LogoutOutlined,
   ProjectOutlined,
   TableOutlined,
-} from "@ant-design/icons";
-import { Link, useNavigate } from "react-router-dom";
-import { useLogout } from "./lib/useLogout";
+} from '@ant-design/icons';
+import { Link, useNavigate } from 'react-router-dom';
 
-const items2: MenuProps["items"] = [
+import { useAuth } from '@/entity/user/store';
+import { useLogout } from '@/entity/auth';
+
+const items2: MenuProps['items'] = [
   {
     key: `sub`,
     label: (
@@ -23,7 +25,7 @@ const items2: MenuProps["items"] = [
         Главная
       </Link>
     ),
-    title: "Главная",
+    title: 'Главная',
     icon: <HomeOutlined />,
   },
   {
@@ -39,7 +41,7 @@ const items2: MenuProps["items"] = [
         "Проект 1"
       </Link>
     ),
-    title: "Проект 1",
+    title: 'Проект 1',
     icon: <ProjectOutlined />,
   },
   {
@@ -58,7 +60,7 @@ const items2: MenuProps["items"] = [
       </Link>
     ),
     title:
-      "Проект 2 с очень длинным названием с очень длинным названием с очень длинным названием",
+      'Проект 2 с очень длинным названием с очень длинным названием с очень длинным названием',
     icon: <ProjectOutlined />,
     children: [
       {
@@ -87,21 +89,18 @@ export const Sidebar = () => {
   const { logout } = useLogout();
   const navigate = useNavigate();
 
+  const { user } = useAuth();
+
   return (
-    <Flex
-      vertical
-      className={"menuContainer"}
-      justify="center"
-      gap={42}
-    >
+    <Flex vertical className={'menuContainer'} justify="center" gap={42}>
       <Flex align="center" gap={6} className="menuAvatarContainer">
         <Avatar size={60} src="https://placecats.com/300/200" />
         <Flex vertical className="menuAvatarLabel" gap={6}>
-          <span style={{ cursor: "default" }}>Имя фамилия</span>
+          <span style={{ cursor: 'default' }}>{user?.email}</span>
           <Flex
             onClick={() => {
               logout();
-              navigate("/login");
+              navigate('/login');
             }}
             role="button"
             gap={4}
@@ -114,10 +113,10 @@ export const Sidebar = () => {
       </Flex>
       <Menu
         mode="inline"
-        defaultSelectedKeys={["1"]}
-        defaultOpenKeys={["sub1"]}
-        className={"menu"}
-        style={{ height: "100%", borderInlineEnd: 0 }}
+        defaultSelectedKeys={['1']}
+        defaultOpenKeys={['sub1']}
+        className={'menu'}
+        style={{ height: '100%', borderInlineEnd: 0 }}
         items={items2}
       />
     </Flex>

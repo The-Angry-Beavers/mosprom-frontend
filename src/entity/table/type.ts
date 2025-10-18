@@ -15,7 +15,10 @@ export type FieldType = {
   data_type: string;
   is_nullable: boolean;
   default_value: string;
-  choices: string[];
+  choices: {
+    id: number;
+    value: string;
+  }[];
 };
 
 export type RowType = {
