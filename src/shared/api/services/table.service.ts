@@ -4,7 +4,7 @@ import { axiosClassic } from '../api';
 
 class TableService {
   async getTables() {
-    return await axiosClassic.get<TableType[]>(API_URL.tables('daw'));
+    return await axiosClassic.get<TableType[]>(API_URL.tables(''));
   }
   async createTable() {
     return await axiosClassic.post<unknown>(API_URL.tables(`/create`));

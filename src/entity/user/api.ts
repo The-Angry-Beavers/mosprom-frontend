@@ -6,6 +6,7 @@ export const useGetMe = () => {
   const query = useQuery({
     queryKey: [QUERY_KEY.GET_ME],
     queryFn: async () => await userService.getMe(),
+    select: (data) => data.data,
   });
 
   return query;

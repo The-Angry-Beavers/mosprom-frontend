@@ -8,7 +8,7 @@ import { errorCatch, getContentType } from './api.helpers';
 import { API_URL } from '../config/apiUrl';
 
 const options: CreateAxiosDefaults = {
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://d5df28gmfmto92a1iqoc.bixf7e87.apigw.yandexcloud.net/api',
   headers: getContentType(),
   withCredentials: true,
 };
@@ -46,7 +46,7 @@ axiosWithAuth.interceptors.request.use(
         if (errorCatch(error) === 'jwt expired') {
           removeFromStorage();
 
-           window.location.href = API_URL.auth('/login');
+          window.location.href = API_URL.auth('/login');
         }
       }
 

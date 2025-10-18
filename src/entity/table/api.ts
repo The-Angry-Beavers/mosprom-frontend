@@ -1,11 +1,12 @@
 import { tableService } from '@/shared/api';
 import { QUERY_KEY } from '@/shared/config/querykey';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const useGetAllTables = () => {
   const query = useQuery({
     queryKey: [QUERY_KEY.GET_ALL_TABLES],
     queryFn: async () => await tableService.getTables(),
+    select: (data) => data.data,
   });
 
   return query;
@@ -29,10 +30,18 @@ export const useCreateTable = () => {
   return mutation;
 };
 
-export const useDeleteTable = (id: string) => {
-  const mutation = useQuery({
-    queryKey: [QUERY_KEY.DELETE_TABLE],
-    queryFn: async () => await tableService.deleteTable(id),
+export const useDeleteTable = () => {
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationKey: [QUERY_KEY.DELETE_TABLE],
+    mutationFn: async (id: string) => await tableService.deleteTable(id),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEY.GET_ALL_TABLES],
+      });
+    },
   });
 
   return mutation;
