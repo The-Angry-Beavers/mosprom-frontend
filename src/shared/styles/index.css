@@ -31,3 +31,9 @@ a {
     text-decoration: underline;
   }
 }
+
+p {
+  margin: 0;
+  padding: 0;
+}
+
