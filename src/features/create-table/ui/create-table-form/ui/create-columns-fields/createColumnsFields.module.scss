@@ -1,0 +1,33 @@
+.createColumnsFields {
+  .title {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 24px;
+    margin-bottom: 16px;
+  }
+
+  .add_button {
+    border: none;
+  }
+
+  .field {
+    overflow: hidden;
+    width: 100%;
+
+    &_name {
+      max-width: 230px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &_delete {
+      font-size: 18px;
+      transition: color 0.2s ease-in;
+
+      &:hover {
+        color: red;
+      }
+    }
+  }
+}

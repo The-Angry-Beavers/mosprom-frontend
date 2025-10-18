@@ -83,7 +83,6 @@ export const NameSpacePage = () => {
           onClick: () => navigate(`/table/${record.key}`),
         })}
       />
-      ;
     </div>
   );
 };
