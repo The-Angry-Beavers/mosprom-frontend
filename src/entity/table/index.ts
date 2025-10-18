@@ -1,5 +1,5 @@
 export type {
-  CreateTableType,
+  CreateTableDto,
   FieldType,
   RowType,
   TableType,

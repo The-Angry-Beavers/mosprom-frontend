@@ -1,2 +1,2 @@
 export { useGetALlNamespace } from './api';
-export type { NamespaceType } from './type';
+export type { NamespaceType, CreateTableDto } from './type';

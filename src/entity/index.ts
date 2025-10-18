@@ -1,6 +1,6 @@
 export { type NamespaceType, useGetALlNamespace } from './namespace';
 export {
-  type CreateTableType,
+  type CreateTableDto,
   type FieldType,
   type RowType,
   type TableType,

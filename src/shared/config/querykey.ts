@@ -5,6 +5,7 @@ export const QUERY_KEY = {
 
   GET_ALL_NAMESPACES: 'get-all-namespaces',
   GET_NAMESPACE: 'get-namespace',
+  CREATE_NAMESPACE: 'create-namespace',
 
   GET_ALL_TABLES: 'get-all-tables',
   GET_TABLE: 'get-table',

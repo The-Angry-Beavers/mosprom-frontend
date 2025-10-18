@@ -1,15 +1,21 @@
-import { Form } from "antd";
-import { useState } from "react";
-import { CreateBaseFields } from "./ui/create-base-fields";
-import { CreateColumnsFields } from "./ui/create-columns-fields";
-import type { CreateTableType } from "@/entity";
+import { Form } from 'antd';
+import { useState } from 'react';
+import { CreateBaseFields } from './ui/create-base-fields';
+import { CreateColumnsFields } from './ui/create-columns-fields';
+import { useCreateTable, type CreateTableDto } from '@/entity';
 
 export const CreateTableForm = ({ namespace }: { namespace: string }) => {
   const [step, setStep] = useState(0);
-  const [form] = Form.useForm<CreateTableType>();
+  const [form] = Form.useForm<CreateTableDto>();
 
-  const onFinish = (values: CreateTableType) => {
-    console.log("✅ Result:", values);
+  const { mutate } = useCreateTable();
+
+  const onFinish = (values: CreateTableDto) => {
+    console.log('✅ Result:', values);
+    mutate({
+      ...values,
+      verbose_name: values.name,
+    });
   };
 
   return (
@@ -17,27 +23,27 @@ export const CreateTableForm = ({ namespace }: { namespace: string }) => {
       layout="vertical"
       form={form}
       onFinish={onFinish}
-	  style={{ paddingTop: "24px" }}
+      style={{ paddingTop: '24px' }}
       initialValues={{
         namespace,
-		templateId: 0,
+        templateId: 0,
         fields: [
           {
             id: 1,
-            name: "Новая колонка",
-            verbose_name: "Новая колонка",
-            data_type: "string",
+            name: 'Новая колонка',
+            verbose_name: 'Новая колонка',
+            data_type: 'string',
             is_nullable: false,
-            default_value: "",
+            default_value: '',
             choices: [],
           },
         ],
       }}
     >
-      <div style={{ display: step === 0 ? "block" : "none" }}>
+      <div style={{ display: step === 0 ? 'block' : 'none' }}>
         <CreateBaseFields form={form} nextStep={() => setStep(step + 1)} />
       </div>
-      <div style={{ display: step === 1 ? "block" : "none" }}>
+      <div style={{ display: step === 1 ? 'block' : 'none' }}>
         <CreateColumnsFields form={form} nextStep={() => setStep(step - 1)} />
       </div>
     </Form>

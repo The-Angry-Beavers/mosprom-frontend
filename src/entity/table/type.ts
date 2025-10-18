@@ -12,12 +12,12 @@ export type FieldType = {
   id: number;
   name: string;
   verbose_name: string;
-  data_type: string;
+  data_type: ChoiceType;
   is_nullable: boolean;
   default_value: string;
   choices: {
     id: number;
-    value: string;
+    value: ChoiceType;
   }[];
 };
 
@@ -41,9 +41,11 @@ export type UpdateTableDto = {
   namespace_id: number;
 };
 
-export type CreateTableType = {
-  namespace: string;
+export type CreateTableDto = {
   name: string;
   fields: FieldType[];
-  templateId: number;
+  verbose_name: string;
+  description: string;
 };
+
+export type ChoiceType = 'int' | 'string' | 'datetime' | 'bool' | 'choice';

@@ -1,4 +1,4 @@
-import type { CreateTableType, FieldType } from '@/entity';
+import type { CreateTableDto, FieldType } from '@/entity';
 import {
   Form,
   Input,
@@ -36,7 +36,7 @@ import cn from 'classnames';
 
 type Props = {
   nextStep: () => void;
-  form: FormInstance<CreateTableType>;
+  form: FormInstance<CreateTableDto>;
 };
 
 interface SortableColumnProps {
@@ -221,13 +221,13 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
       <Row gutter={60}>
         <Col span={12}>
           <p className={css.title}>
-            <span>{form.getFieldValue('namespace')}</span> |{' '}
+            <span>{form.getFieldValue('name')}</span> |{' '}
             <span>{form.getFieldValue('name')}</span>
           </p>
         </Col>
 
         <Col span={12}>
-          <Form.Item<CreateTableType> name="templateId">
+          <Form.Item<CreateTableDto>>
             <Select placeholder="Выберите шаблон">
               <Select.Option value={0} label="Создать новый шаблон">
                 + Создать новый шаблон
@@ -315,13 +315,14 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
                   onChange={(v) => handleFieldChange('data_type', v)}
                 >
                   <Select.Option value="string">Строка</Select.Option>
-                  <Select.Option value="number">Число</Select.Option>
-                  <Select.Option value="boolean">Логическое</Select.Option>
-                  <Select.Option value="select">Выбор</Select.Option>
+                  <Select.Option value="int">Число</Select.Option>
+                  <Select.Option value="bool">Логическое</Select.Option>
+                  <Select.Option value="choice">Выбор</Select.Option>
+                  <Select.Option value="datetime">Дата</Select.Option>
                 </Select>
               </Form.Item>
 
-              {selectField?.data_type === 'select' && (
+              {selectField?.data_type === 'choice' && (
                 <Form.List
                   name={[
                     'fields',

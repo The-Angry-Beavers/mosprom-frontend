@@ -1,6 +1,7 @@
 import { tableService } from '@/shared/api';
 import { QUERY_KEY } from '@/shared/config/querykey';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { CreateTableDto } from './type';
 
 export const useGetAllTables = () => {
   const query = useQuery({
@@ -24,7 +25,7 @@ export const useGetTable = (id: string) => {
 export const useCreateTable = () => {
   const mutation = useMutation({
     mutationKey: [QUERY_KEY.CREATE_TABLE],
-    mutationFn: async () => await tableService.createTable(),
+    mutationFn: async (dto: CreateTableDto) => await tableService.createTable(dto),
   });
 
   return mutation;

@@ -10,7 +10,7 @@ export const RegisterForm = () => {
   const openNotification = () => {
     api.success({
       message: 'Вы успешно зарегистрировались!',
-      placement: 'topRight',
+      placement: 'bottomRight',
     });
     form.resetFields();
   };

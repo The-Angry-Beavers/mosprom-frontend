@@ -1,13 +1,14 @@
 import type { TableType, UpdateTableDto } from '@/entity';
 import { API_URL } from '@/shared/config/apiUrl';
 import { axiosClassic } from '../api';
+import type { CreateTableDto } from '@/entity/table';
 
 class TableService {
   async getTables() {
     return await axiosClassic.get<TableType[]>(API_URL.tables(''));
   }
-  async createTable() {
-    return await axiosClassic.post<unknown>(API_URL.tables(`/create`));
+  async createTable(dto: CreateTableDto) {
+    return await axiosClassic.post<unknown>(API_URL.tables(''), dto);
   }
   async deleteTable(id: string) {
     return await axiosClassic.delete<unknown>(API_URL.tables(`/${id}`));
