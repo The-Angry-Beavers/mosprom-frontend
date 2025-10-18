@@ -6,20 +6,8 @@ export const useGetALlNamespace = () => {
   const { data, isLoading } = useQuery({
     queryKey: [QUERY_KEY.GET_ALL_NAMESPACES],
     queryFn: () => namespaceService.getAllNamespaces(),
+    select: (data) => data.data,
   });
 
-  const mockData = namespaceService.getAllNamespaces();
-
-  return { mockData, data, isLoading };
-};
-
-export const useGetNamespaceById = (id: number) => {
-  const { data, isLoading } = useQuery({
-    queryKey: [QUERY_KEY.GET_NAMESPACE],
-    queryFn: () => namespaceService.getNamespaceById(id),
-  });
-
-  const mockData = namespaceService.getNamespaceById(id);
-
-  return { mockData, data, isLoading };
+  return { data, isLoading };
 };

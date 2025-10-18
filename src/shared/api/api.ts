@@ -8,7 +8,7 @@ import { errorCatch, getContentType } from './api.helpers';
 import { API_URL } from '../config/apiUrl';
 
 const options: CreateAxiosDefaults = {
-  baseURL: import.meta.env.SERVER_URL,
+  baseURL: 'http://localhost:5000/api',
   headers: getContentType(),
   withCredentials: true,
 };
