@@ -7,7 +7,6 @@ import {
   Select,
   Checkbox,
   Button,
-  Space,
   Flex,
   message,
 } from "antd";
@@ -94,7 +93,6 @@ export const TablePage = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-
       const isCtrl = e.ctrlKey || e.metaKey;
 
       if (isCtrl && e.code === "KeyZ") {
@@ -239,22 +237,25 @@ export const TablePage = () => {
   });
 
   return (
-    <Flex style={{ padding: 20 }} vertical gap={20}>
-      <Table
-        dataSource={dataSource}
-        columns={columns}
-        pagination={false}
-        bordered
-      />
+    <Flex vertical>
+      <h1>Название таблицы!</h1>
+      <Flex vertical gap={20}>
+        <Table
+          dataSource={dataSource}
+          columns={columns}
+          pagination={false}
+          bordered
+        />
 
-      <Button
-        type="dashed"
-        icon={<PlusOutlined />}
-        onClick={handleAddRow}
-        block={false}
-      >
-        Добавить строку
-      </Button>
+        <Button
+          type="dashed"
+          icon={<PlusOutlined />}
+          onClick={handleAddRow}
+          block={false}
+        >
+          Добавить строку
+        </Button>
+      </Flex>
     </Flex>
   );
 };
