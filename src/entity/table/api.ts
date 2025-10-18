@@ -2,6 +2,7 @@ import { tableService } from '@/shared/api';
 import { QUERY_KEY } from '@/shared/config/querykey';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { CreateTableDto } from './type';
+import type { AddRowData, DeleteRowData, UpdateRowData } from "@/entity/table/type";
 
 export const useGetAllTables = () => {
   const query = useQuery({
@@ -15,11 +16,71 @@ export const useGetAllTables = () => {
 
 export const useGetTable = (id: string) => {
   const query = useQuery({
-    queryKey: [QUERY_KEY.GET_TABLE],
+    queryKey: [`${QUERY_KEY.GET_TABLE}_${id}`],
     queryFn: async () => await tableService.getTable(id),
   });
 
   return query;
+};
+
+export const useGetTableRows = (id: string) => {
+  const query = useQuery({
+    queryKey: [`${QUERY_KEY.GET_TABLE_ROWS}_${id}`],
+    queryFn: async () => await tableService.getTableRows(id),
+  });
+
+  return query;
+};
+
+export const useAddTableRow = (id: number) => {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationKey: [QUERY_KEY.ADD_TABLE_ROW],
+    mutationFn: async (data: AddRowData) =>
+      await tableService.addTableRow(data),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`${QUERY_KEY.GET_TABLE_ROWS}_${id}`],
+      });
+    },
+  });
+
+  return mutation;
+};
+
+export const useDeleteTableRow = (id: number) => {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationKey: [QUERY_KEY.DELETE_TABLE_ROW],
+    mutationFn: async (data: DeleteRowData) =>
+      await tableService.deleteTableRow(data),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`${QUERY_KEY.GET_TABLE_ROWS}_${id}`],
+      });
+    },
+  });
+
+  return mutation;
+};
+
+export const useUpdateTableRow = (id: number) => {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationKey: [QUERY_KEY.UPDATE_TABLE_ROW],
+    mutationFn: async (data: UpdateRowData) =>
+      await tableService.updateTableRow(data),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [`${QUERY_KEY.GET_TABLE_ROWS}_${id}`],
+      });
+    },
+  });
+
+  return mutation;
 };
 
 export const useCreateTable = () => {

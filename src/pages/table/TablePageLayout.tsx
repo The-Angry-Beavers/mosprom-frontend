@@ -1,13 +1,13 @@
 import { useGetTable } from '@/entity';
 import { TablePage } from '.';
 import { useParams } from 'react-router-dom';
+import { useGetTableRows } from '@/entity/table/api';
 
 export const TablePageLayout = () => {
   const { tableId } = useParams();
 
   const { data } = useGetTable(tableId || '');
-
-  console.log(data)
-
-  return <TablePage columnsData={[]} rowsData={[]} canEdit={false} />;
+  const { data: rows } = useGetTableRows(tableId || '');
+console.log(rows?.data?.rows)
+  return <TablePage columnsData={data?.data?.fields || []} rowsData={rows?.data?.rows || []} name={data?.data?.name || ''} canEdit={false} />;
 };
