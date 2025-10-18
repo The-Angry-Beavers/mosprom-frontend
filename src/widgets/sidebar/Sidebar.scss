@@ -1,5 +1,6 @@
 .menuContainer {
   padding: 2rem 0;
+  padding-right: 0.5rem;
   .menuAvatarLabel {
     color: #002664;
 	font-weight: 500;
@@ -15,7 +16,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-      max-width: 100px;
+      max-width: 150px;
     }
 	.ant-menu-item {
 		padding: 0;

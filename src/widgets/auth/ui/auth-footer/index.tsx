@@ -12,7 +12,7 @@ export const AuthFooter = ({ type, text }: Props) => {
     <p className={css.authFooter}>
       {text}
       <Link to={type === 'login' ? '/register' : '/login'}>
-        {type === 'login' ? 'зарегистрироваться' : 'войти'}
+        {type === 'login' ? 'Зарегистрироваться' : 'Войти'}
       </Link>
     </p>
   );

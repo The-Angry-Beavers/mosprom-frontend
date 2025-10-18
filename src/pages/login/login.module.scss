@@ -4,7 +4,32 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url('/public/auth-bg.png');
+  background-image: url("/public/auth-bg.png");
   background-repeat: no-repeat;
   background-size: cover;
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      120deg,
+      rgba(255, 255, 255, 0) 30%,
+      rgba(255, 255, 255, 0.4) 50%,
+      rgba(255, 255, 255, 0) 70%
+    );
+    background-repeat: repeat-x;
+    background-size: 300% 100%;
+    animation: moveLight 30s linear infinite;
+    pointer-events: none;
+  }
+}
+
+@keyframes moveLight {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 300% 0;
+  }
 }
