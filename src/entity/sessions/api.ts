@@ -6,11 +6,11 @@ import { useSession } from './store';
 import { useParams } from 'react-router-dom';
 
 export const useGetSession = (tableId: string) => {
-
   const query = useQuery({
     queryKey: [QUERY_KEY.GET_SESSIONS],
     queryFn: async () => await sessionService.getSession(tableId),
     select: (data) => data.data,
+    refetchInterval: 10000,
   });
 
   return query;
@@ -35,6 +35,7 @@ export const useConnectSession = () => {
     mutationKey: [QUERY_KEY.CONNECT_SESSION],
     mutationFn: async () => await sessionService.connectSession(`${tableId}`),
     onSuccess: (data) => setSession(data.data),
+    retry: false,
   });
 
   return mutation;

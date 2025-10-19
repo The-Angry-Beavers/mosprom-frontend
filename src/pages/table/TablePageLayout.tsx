@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { useSession } from '@/entity/sessions/store';
 
 import { useAuth } from '@/entity/user/store';
+import { sessionService } from '@/shared/api/services/session.service';
 
 export const TablePageLayout = () => {
   const { tableId } = useParams();
@@ -20,8 +21,14 @@ export const TablePageLayout = () => {
   const { session, deleteSession } = useSession();
   const { data: sessions } = useGetSession(tableId || '');
 
+  const handleDisconect = async () => {
+    await sessionService.closeSession(`${session?.id}`);
+  };
+
   useEffect(() => {
-    mutate();
+    if (!session) {
+      mutate();
+    }
 
     return () => {
       deleteSession();

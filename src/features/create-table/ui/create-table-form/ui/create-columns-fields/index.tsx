@@ -33,7 +33,7 @@ import {
   PlusOutlined,
 } from '@ant-design/icons';
 import cn from 'classnames';
-import type { ChoiceType } from "@/entity/table/type";
+import type { ChoiceType } from '@/entity/table/type';
 
 type Props = {
   nextStep: () => void;
@@ -53,36 +53,36 @@ interface SortableColumnProps {
 const template1 = [
   {
     id: 1,
-    name: "Имя",
-    verbose_name: "Новая колонка",
-    data_type: "string" as ChoiceType,
+    name: 'Имя',
+    verbose_name: 'Новая колонка',
+    data_type: 'string' as ChoiceType,
     is_nullable: false,
     default_value: '',
     choices: [],
   },
   {
-    field_id: 1.2646618597126693,
-    name: "Год",
-    verbose_name: "Новая колонка",
-    data_type: "datetime" as ChoiceType,
+    id: 1.2646618597126693,
+    name: 'Год',
+    verbose_name: 'Новая колонка',
+    data_type: 'datetime' as ChoiceType,
     is_nullable: false,
     default_value: '',
     choices: [],
   },
   {
-    field_id: 2.687277815444042,
-    name: "Зарплата",
-    verbose_name: "Новая колонка",
-    data_type: "int" as ChoiceType,
+    id: 2.687277815444042,
+    name: 'Зарплата',
+    verbose_name: 'Новая колонка',
+    data_type: 'int' as ChoiceType,
     is_nullable: false,
     default_value: '',
     choices: [],
   },
   {
-    field_id: 3.419554773409049,
-    name: "Позиция",
-    verbose_name: "Новая колонка",
-    data_type: "choice" as ChoiceType,
+    id: 3.419554773409049,
+    name: 'Позиция',
+    verbose_name: 'Новая колонка',
+    data_type: 'choice' as ChoiceType,
     is_nullable: false,
     default_value: '',
     choices: [
@@ -104,42 +104,42 @@ const template1 = [
 
 const template2 = [
   {
-    field_id: 1.2647126693,
-    name: "Дата создания",
-    verbose_name: "Новая колонка",
-    data_type: "datetime" as ChoiceType,
+    id: 1.2647126693,
+    name: 'Дата создания',
+    verbose_name: 'Новая колонка',
+    data_type: 'datetime' as ChoiceType,
     is_nullable: false,
-    default_value: "",
+    default_value: '',
     choices: [],
   },
   {
-    field_id: 2.68744042,
-    name: "Вес",
-    verbose_name: "Новая колонка вес",
-    data_type: "int" as ChoiceType,
+    id: 2.68744042,
+    name: 'Вес',
+    verbose_name: 'Новая колонка вес',
+    data_type: 'int' as ChoiceType,
     is_nullable: false,
-    default_value: "23",
+    default_value: '23',
     choices: [],
   },
   {
-    field_id: 3.3409049,
-    name: "Материал",
-    verbose_name: "Новая колонка",
-    data_type: "choice" as ChoiceType,
+    id: 3.3409049,
+    name: 'Материал',
+    verbose_name: 'Новая колонка',
+    data_type: 'choice' as ChoiceType,
     is_nullable: false,
-    default_value: "серебро",
+    default_value: 'серебро',
     choices: [
       {
         id: 0.556103339,
-        value: "серебро",
+        value: 'серебро',
       },
       {
         id: 1.0977522,
-        value: "золото",
+        value: 'золото',
       },
       {
         id: 2.46507264,
-        value: "медь",
+        value: 'медь',
       },
     ],
   },
@@ -226,6 +226,19 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
     }
   };
 
+  const handleAddTemplate = (template: FieldType[]) => {
+    if (template.length === 0) {
+      setColumns([]);
+      form.setFieldsValue({ fields: [] });
+      setSelectField(null);
+      return;
+    }
+
+    setColumns(template);
+    form.setFieldsValue({ fields: template });
+    setSelectField(template[0]);
+  };
+
   const handleChoiceDragEnd = (event: any) => {
     const field = columns.find((f) =>
       f.choices.find((c) => c.id === event.active.id)
@@ -289,6 +302,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
   console.log(form.getFieldsValue());
   const handleDeleteChoice = (col: number) => {
     if (!selectField) return;
+
     const newChoices = [...selectField.choices].filter((c) => c.id !== col);
     handleFieldChange('choices', newChoices as FieldType['choices']);
   };
@@ -332,16 +346,11 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
           <Form.Item<CreateTableDto>>
             <Select
               placeholder="Выберите шаблон"
-              onChange={(e) =>
-                form.setFieldsValue({
-                  fields:
-                    e.target.value === 1
-                      ? template1
-                      : e.target.value === 2
-                      ? template2
-                      : [],
-                })
-              }
+              onChange={(e) => {
+                if (e === 1) handleAddTemplate(template1 as FieldType[]);
+                else if (e === 2) handleAddTemplate(template2 as FieldType[]);
+                else handleAddTemplate([]);
+              }}
             >
               <Select.Option value={0} label="Создать новый шаблон">
                 + Создать новый шаблон
