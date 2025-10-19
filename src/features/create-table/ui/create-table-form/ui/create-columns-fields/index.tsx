@@ -33,6 +33,7 @@ import {
   PlusOutlined,
 } from '@ant-design/icons';
 import cn from 'classnames';
+import type { ChoiceType } from "@/entity/table/type";
 
 type Props = {
   nextStep: () => void;
@@ -49,39 +50,39 @@ interface SortableColumnProps {
   children?: React.ReactNode;
 }
 
-const templates = [
+const template1 = [
   {
     id: 1,
-    name: 'Имя',
-    verbose_name: 'Новая колонка',
-    data_type: 'string',
+    name: "Имя",
+    verbose_name: "Новая колонка",
+    data_type: "string" as ChoiceType,
     is_nullable: false,
     default_value: '',
     choices: [],
   },
   {
     field_id: 1.2646618597126693,
-    name: 'Год',
-    verbose_name: 'Новая колонка',
-    data_type: 'datetime',
+    name: "Год",
+    verbose_name: "Новая колонка",
+    data_type: "datetime" as ChoiceType,
     is_nullable: false,
     default_value: '',
     choices: [],
   },
   {
     field_id: 2.687277815444042,
-    name: 'Зарплата',
-    verbose_name: 'Новая колонка',
-    data_type: 'int',
+    name: "Зарплата",
+    verbose_name: "Новая колонка",
+    data_type: "int" as ChoiceType,
     is_nullable: false,
     default_value: '',
     choices: [],
   },
   {
     field_id: 3.419554773409049,
-    name: 'Позиция',
-    verbose_name: 'Новая колонка',
-    data_type: 'choice',
+    name: "Позиция",
+    verbose_name: "Новая колонка",
+    data_type: "choice" as ChoiceType,
     is_nullable: false,
     default_value: '',
     choices: [
@@ -96,6 +97,49 @@ const templates = [
       {
         id: 2.4632975908507264,
         value: 'senior',
+      },
+    ],
+  },
+];
+
+const template2 = [
+  {
+    field_id: 1.2647126693,
+    name: "Дата создания",
+    verbose_name: "Новая колонка",
+    data_type: "datetime" as ChoiceType,
+    is_nullable: false,
+    default_value: "",
+    choices: [],
+  },
+  {
+    field_id: 2.68744042,
+    name: "Вес",
+    verbose_name: "Новая колонка вес",
+    data_type: "int" as ChoiceType,
+    is_nullable: false,
+    default_value: "23",
+    choices: [],
+  },
+  {
+    field_id: 3.3409049,
+    name: "Материал",
+    verbose_name: "Новая колонка",
+    data_type: "choice" as ChoiceType,
+    is_nullable: false,
+    default_value: "серебро",
+    choices: [
+      {
+        id: 0.556103339,
+        value: "серебро",
+      },
+      {
+        id: 1.0977522,
+        value: "золото",
+      },
+      {
+        id: 2.46507264,
+        value: "медь",
       },
     ],
   },
@@ -242,7 +286,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
     setColumns(updatedColumns);
     form.setFieldsValue({ fields: updatedColumns });
   };
-
+  console.log(form.getFieldsValue());
   const handleDeleteChoice = (col: number) => {
     if (!selectField) return;
     const newChoices = [...selectField.choices].filter((c) => c.id !== col);
@@ -286,17 +330,20 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
 
         <Col span={12}>
           <Form.Item<CreateTableDto>>
-            <Select placeholder="Выберите шаблон">
-              <Select.Option
-                value={0}
-                label="Создать новый шаблон"
-                onChange={(e) =>
-                  form.setFieldValue(
-                    'fields',
-                    e.target.value ? templates[e.target.value - 1] : []
-                  )
-                }
-              >
+            <Select
+              placeholder="Выберите шаблон"
+              onChange={(e) =>
+                form.setFieldsValue({
+                  fields:
+                    e.target.value === 1
+                      ? template1
+                      : e.target.value === 2
+                      ? template2
+                      : [],
+                })
+              }
+            >
+              <Select.Option value={0} label="Создать новый шаблон">
                 + Создать новый шаблон
               </Select.Option>
               <Select.Option value={1}>Сохранённый шаблон 1</Select.Option>

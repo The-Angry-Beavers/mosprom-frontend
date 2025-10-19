@@ -9,5 +9,5 @@ export const TablePageLayout = () => {
   const { data } = useGetTable(tableId || '');
   const { data: rows } = useGetTableRows(tableId || '');
 console.log(rows?.data?.rows)
-  return <TablePage columnsData={data?.data?.fields || []} rowsData={rows?.data?.rows || []} name={data?.data?.name || ''} canEdit={false} />;
+  return <TablePage columnsData={data?.data?.fields || []} rowsData={rows?.data?.rows || []} name={data?.data?.verbose_name || ''} canEdit={false} />;
 };
