@@ -1,5 +1,5 @@
 import { Form } from 'antd';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CreateBaseFields } from './ui/create-base-fields';
 import { CreateColumnsFields } from './ui/create-columns-fields';
 import { useCreateTable, type CreateTableDto } from '@/entity';
@@ -18,12 +18,12 @@ export const CreateTableForm = ({
 }) => {
   const [step, setStep] = useState(0);
   const [form] = Form.useForm<CreateTableDto>();
-  const {namespaceId} = useParams();
-
+  const { namespaceId } = useParams();
+  const [isReset, setIsReset] = useState(false);
   const { mutate: moveToTable } = useMovetoTable();
 
   const handleCallback = (table_id: number) => {
-	if (!table_id) return
+    if (!table_id) return;
     moveToTable({ table_id, target_namespace_id: Number(namespaceId) || 0 });
     onNotify?.();
   };
@@ -32,12 +32,23 @@ export const CreateTableForm = ({
 
   const onFinish = (values: CreateTableDto) => {
     console.log('✅ Result:', values);
+    form.resetFields();
+    setStep(0);
     mutate({
       ...values,
       name: uuidv4(),
     });
     handleClose?.();
+
+    setIsReset(true);
   };
+
+  useEffect(() => {
+    if (isReset) {
+      form.resetFields();
+      setIsReset(false);
+    }
+  }, [isReset]);
 
   return (
     <Form
@@ -65,7 +76,11 @@ export const CreateTableForm = ({
         <CreateBaseFields form={form} nextStep={() => setStep(step + 1)} />
       </div>
       <div style={{ display: step === 1 ? 'block' : 'none' }}>
-        <CreateColumnsFields form={form} nextStep={() => setStep(step - 1)} />
+        <CreateColumnsFields
+          isReset={isReset}
+          form={form}
+          nextStep={() => setStep(step - 1)}
+        />
       </div>
     </Form>
   );

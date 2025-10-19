@@ -37,7 +37,7 @@ export const CreateBaseFields = ({ nextStep, form }: Props) => {
         <Form.Item shouldUpdate>
           {() => (
             <Button
-              disabled={!form.getFieldValue('verbose_name')}
+              disabled={!form.getFieldValue('verbose_name') || !form.getFieldValue('description')}
               onClick={nextStep}
               block
               type="primary"

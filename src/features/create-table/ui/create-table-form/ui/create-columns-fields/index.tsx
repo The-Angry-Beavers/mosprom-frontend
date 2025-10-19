@@ -1,4 +1,4 @@
-import type { CreateTableDto, FieldType } from "@/entity";
+import type { CreateTableDto, FieldType } from '@/entity';
 import {
   Form,
   Input,
@@ -8,35 +8,36 @@ import {
   Col,
   Select,
   type FormInstance,
-} from "antd";
-import css from "./createColumnsFields.module.scss";
-import { CSS } from "@dnd-kit/utilities";
+} from 'antd';
+import css from './createColumnsFields.module.scss';
+import { CSS } from '@dnd-kit/utilities';
 import {
   closestCenter,
   DndContext,
   PointerSensor,
   useSensor,
   useSensors,
-} from "@dnd-kit/core";
-import { useState } from "react";
+} from '@dnd-kit/core';
+import { useEffect, useState } from 'react';
 
 import {
   arrayMove,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
+} from '@dnd-kit/sortable';
 
 import {
   DeleteOutlined,
   HolderOutlined,
   PlusOutlined,
-} from "@ant-design/icons";
-import cn from "classnames";
+} from '@ant-design/icons';
+import cn from 'classnames';
 
 type Props = {
   nextStep: () => void;
   form: FormInstance<CreateTableDto>;
+  isReset?: boolean;
 };
 
 interface SortableColumnProps {
@@ -51,50 +52,50 @@ interface SortableColumnProps {
 const templates = [
   {
     id: 1,
-    name: "Имя",
-    verbose_name: "Новая колонка",
-    data_type: "string",
+    name: 'Имя',
+    verbose_name: 'Новая колонка',
+    data_type: 'string',
     is_nullable: false,
-    default_value: "",
+    default_value: '',
     choices: [],
   },
   {
     field_id: 1.2646618597126693,
-    name: "Год",
-    verbose_name: "Новая колонка",
-    data_type: "datetime",
+    name: 'Год',
+    verbose_name: 'Новая колонка',
+    data_type: 'datetime',
     is_nullable: false,
-    default_value: "",
+    default_value: '',
     choices: [],
   },
   {
     field_id: 2.687277815444042,
-    name: "Зарплата",
-    verbose_name: "Новая колонка",
-    data_type: "int",
+    name: 'Зарплата',
+    verbose_name: 'Новая колонка',
+    data_type: 'int',
     is_nullable: false,
-    default_value: "",
+    default_value: '',
     choices: [],
   },
   {
     field_id: 3.419554773409049,
-    name: "Позиция",
-    verbose_name: "Новая колонка",
-    data_type: "choice",
+    name: 'Позиция',
+    verbose_name: 'Новая колонка',
+    data_type: 'choice',
     is_nullable: false,
-    default_value: "",
+    default_value: '',
     choices: [
       {
         id: 0.5590639466103339,
-        value: "junior",
+        value: 'junior',
       },
       {
         id: 1.097752450730912,
-        value: "middle",
+        value: 'middle',
       },
       {
         id: 2.4632975908507264,
-        value: "senior",
+        value: 'senior',
       },
     ],
   },
@@ -114,28 +115,28 @@ const SortableColumn: React.FC<SortableColumnProps> = ({
     transform: CSS.Transform.toString(transform),
     transition,
     marginBottom: 8,
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
     gap: 8,
-    padding: "8px 12px",
-    border: "1px solid #d9d9d9",
+    padding: '8px 12px',
+    border: '1px solid #d9d9d9',
     borderRadius: 8,
-    background: "#fff",
-    cursor: "pointer",
-    userSelect: "none",
+    background: '#fff',
+    cursor: 'pointer',
+    userSelect: 'none',
   };
 
   return (
     <div
       className={css.field}
       ref={setNodeRef}
-      style={{ ...style, border: isActive ? "1px solid #002664" : "" }}
+      style={{ ...style, border: isActive ? '1px solid #002664' : '' }}
       {...attributes}
     >
-      <Flex style={{ width: "100%" }} justify="space-between">
+      <Flex style={{ width: '100%' }} justify="space-between">
         <Flex gap={10} onClick={onClick}>
           <HolderOutlined
-            style={{ cursor: "grab", color: "#999" }}
+            style={{ cursor: 'grab', color: '#999' }}
             {...listeners}
             onClick={(e) => e.stopPropagation()}
           />
@@ -153,7 +154,7 @@ const SortableColumn: React.FC<SortableColumnProps> = ({
 
 export const CreateColumnsFields = ({ nextStep, form }: Props) => {
   const [columns, setColumns] = useState<FieldType[]>(
-    form.getFieldValue("fields") || []
+    form.getFieldValue('fields') || []
   );
   const [selectField, setSelectField] = useState<FieldType | null>(
     columns[0] || null
@@ -172,8 +173,8 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
     const { active, over } = event;
     if (active.id !== over?.id) {
       setColumns((prev) => {
-        const oldIndex = prev.findIndex((f) => f.field_id === active.id);
-        const newIndex = prev.findIndex((f) => f.field_id === over.id);
+        const oldIndex = prev.findIndex((f) => f.id === active.id);
+        const newIndex = prev.findIndex((f) => f.id === over.id);
         const newOrder = arrayMove(prev, oldIndex, newIndex);
         form.setFieldsValue({ fields: newOrder });
         return newOrder;
@@ -195,7 +196,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
 
       const updatedField = { ...field, choices: newOrder };
       const updatedColumns = columns.map((f) =>
-        f.field_id === updatedField.field_id ? updatedField : f
+        f.id === updatedField.id ? updatedField : f
       );
 
       setSelectField(updatedField);
@@ -206,12 +207,12 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
 
   const handleAddColumn = () => {
     const newField: FieldType = {
-      field_id: columns.length + Math.random(),
-      name: "Новая колонка",
-      verbose_name: "Новая колонка",
-      data_type: "string",
+      id: columns.length + Math.random(),
+      name: 'Новая колонка',
+      verbose_name: 'Новая колонка',
+      data_type: 'string',
       is_nullable: false,
-      default_value: "",
+      default_value: '',
       choices: [],
     };
     const newList = [...columns, newField];
@@ -221,7 +222,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
   };
 
   const handleDeleteColumn = (id: number) => {
-    const newList = columns.filter((f) => f.field_id !== id);
+    const newList = columns.filter((f) => f.id !== id);
     setColumns(newList);
     form.setFieldsValue({ fields: newList });
     setSelectField(null);
@@ -236,7 +237,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
     setSelectField(updatedField);
 
     const updatedColumns = columns.map((col) =>
-      col.field_id === updatedField.field_id ? updatedField : col
+      col.id === updatedField.id ? updatedField : col
     );
     setColumns(updatedColumns);
     form.setFieldsValue({ fields: updatedColumns });
@@ -245,7 +246,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
   const handleDeleteChoice = (col: number) => {
     if (!selectField) return;
     const newChoices = [...selectField.choices].filter((c) => c.id !== col);
-    handleFieldChange("choices", newChoices as FieldType["choices"]);
+    handleFieldChange('choices', newChoices as FieldType['choices']);
   };
 
   const handleAddChoice = () => {
@@ -253,9 +254,9 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
 
     const newChoices = [
       ...selectField.choices,
-      { id: selectField.choices.length + Math.random(), value: "" },
+      { id: selectField.choices.length + Math.random(), value: '' },
     ];
-    handleFieldChange("choices", newChoices as FieldType["choices"]);
+    handleFieldChange('choices', newChoices as FieldType['choices']);
   };
 
   const handleChoiceChange = (id: number, value: string) => {
@@ -265,7 +266,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
       c.id === id ? { ...c, value } : c
     );
 
-    handleFieldChange("choices", newChoices as FieldType["choices"]);
+    handleFieldChange('choices', newChoices as FieldType['choices']);
   };
 
   return (
@@ -274,11 +275,11 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
         <Col span={12}>
           <p className={css.title}>
             <span>
-              {form.getFieldValue("verbose_name")}
+              {form.getFieldValue('verbose_name')}
               <br />
             </span>
-            <p style={{ fontSize: "1rem", fontWeight: 300 }}>
-              {form.getFieldValue("description")}
+            <p style={{ fontSize: '1rem', fontWeight: 300 }}>
+              {form.getFieldValue('description')}
             </p>
           </p>
         </Col>
@@ -291,7 +292,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
                 label="Создать новый шаблон"
                 onChange={(e) =>
                   form.setFieldValue(
-                    "fields",
+                    'fields',
                     e.target.value ? templates[e.target.value - 1] : []
                   )
                 }
@@ -316,19 +317,17 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
                   onDragEnd={handleDragEnd}
                 >
                   <SortableContext
-                    items={columns.map((col) => col.field_id)}
+                    items={columns.map((col) => col.id)}
                     strategy={verticalListSortingStrategy}
                   >
                     {columns.map((col) => {
                       return (
                         <SortableColumn
-                          isActive={selectField?.field_id === col.field_id}
+                          isActive={selectField?.id === col.id}
                           onClick={() => setSelectField(col)}
-                          onHandleDelete={() =>
-                            handleDeleteColumn(col.field_id)
-                          }
-                          key={col.field_id}
-                          id={col.field_id}
+                          onHandleDelete={() => handleDeleteColumn(col.id)}
+                          key={col.id}
+                          id={col.id}
                           children={
                             <div
                               className={cn(css.field_name)}
@@ -360,29 +359,27 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
               <Form.Item
                 label="Название столбца"
                 name={[
-                  "fields",
-                  `${columns.findIndex(
-                    (c) => c.field_id === selectField.field_id
-                  )}`,
-                  "name",
+                  'fields',
+                  `${columns.findIndex((c) => c.id === selectField.id)}`,
+                  'name',
                 ]}
                 rules={[
                   {
                     required: true,
-                    message: "Пожалуйста, введите название столбца",
+                    message: 'Пожалуйста, введите название столбца',
                   },
                 ]}
               >
                 <Input
                   value={selectField.name}
-                  onChange={(e) => handleFieldChange("name", e.target.value)}
+                  onChange={(e) => handleFieldChange('name', e.target.value)}
                 />
               </Form.Item>
 
               <Form.Item label="Тип данных">
                 <Select
                   value={selectField.data_type}
-                  onChange={(v) => handleFieldChange("data_type", v)}
+                  onChange={(v) => handleFieldChange('data_type', v)}
                 >
                   <Select.Option value="string">Строка</Select.Option>
                   <Select.Option value="int">Число</Select.Option>
@@ -392,19 +389,17 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
                 </Select>
               </Form.Item>
 
-              {selectField?.data_type === "choice" && (
+              {selectField?.data_type === 'choice' && (
                 <Form.List
                   name={[
-                    "fields",
-                    `${columns.findIndex(
-                      (c) => c.field_id === selectField.field_id
-                    )}`,
-                    "choices",
+                    'fields',
+                    `${columns.findIndex((c) => c.id === selectField.id)}`,
+                    'choices',
                   ]}
                 >
                   {() => (
                     <div className={css.choices}>
-                      <p style={{ marginBottom: "8px" }}>Варианты</p>
+                      <p style={{ marginBottom: '8px' }}>Варианты</p>
                       <DndContext
                         sensors={sensors}
                         collisionDetection={closestCenter}

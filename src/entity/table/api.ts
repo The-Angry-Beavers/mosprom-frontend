@@ -10,7 +10,7 @@ import type {
 
 export const useGetAllTables = () => {
   const query = useQuery({
-    queryKey: [QUERY_KEY.GET_NAMESPACE],
+    queryKey: [QUERY_KEY.GET_ALL_TABLES],
     queryFn: async () => await tableService.getTables(),
     select: (data) => data.data,
   });
@@ -96,8 +96,11 @@ export const useCreateTable = (callback?: (table_id: number) => void) => {
       await tableService.createTable(dto),
 
     onSuccess: (data) => {
+
+      console.log({data});
+
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEY.GET_ALL_TABLES],
+        queryKey: [QUERY_KEY.GET_ALL_NAMESPACES],
       });
       
       typeof callback === 'function' && callback?.(data.data.id || 0);
@@ -116,7 +119,7 @@ export const useDeleteTable = (callback?: () => void) => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [QUERY_KEY.GET_ALL_TABLES],
+        queryKey: [QUERY_KEY.GET_ALL_NAMESPACES],
       });
 
       typeof callback === 'function' && callback?.();

@@ -9,7 +9,7 @@ export type TableType = {
 };
 
 export type FieldType = {
-  field_id: number;
+  id: number;
   name: string;
   verbose_name: string;
   data_type: ChoiceType;
@@ -47,11 +47,11 @@ export interface DeleteRowData {
 export interface UpdateRowData {
   table_id: number;
   updated_rows: {
-	row_id: number;
-	new_values: {
-	  field_id: number;
-	  value: Value;
-	}[];
+    row_id: number;
+    new_values: {
+      field_id: number;
+      value: Value;
+    }[];
   }[];
 }
 
