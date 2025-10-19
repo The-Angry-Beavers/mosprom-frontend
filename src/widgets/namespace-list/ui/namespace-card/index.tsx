@@ -2,11 +2,9 @@ import type { NamespaceType } from "@/entity";
 import { Card, Flex } from "antd";
 import css from "./namespaceCard.module.scss";
 import {
-  DeleteOutlined,
   FolderOutlined,
   PlusOutlined,
 } from "@ant-design/icons";
-import { useDeleteNamespace } from "@/entity/namespace/api";
 type Props = {
   namespace: NamespaceType;
   addCard?: boolean;

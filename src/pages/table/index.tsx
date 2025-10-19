@@ -55,114 +55,6 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
   const [mapping, setMapping] = useState<Record<string, string>>({});
   const [isMappingModalOpen, setIsMappingModalOpen] = useState(false);
 
-  const handleExcelFile = (file: any, onSuccess?: () => void) => {
-    const f = file as File;
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      try {
-        const data = new Uint8Array(e.target?.result as ArrayBuffer);
-        const workbook = XLSX.read(data, { type: "array" });
-
-        let foundHeaders = false;
-        const allSheets = workbook.SheetNames.map((sheetName) => {
-          const sheet = workbook.Sheets[sheetName];
-          const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-          return { sheetName, rows: json };
-        });
-
-        const expectedHeaders = fields.map((f) => f.verbose_name);
-
-        for (const { rows } of allSheets) {
-          for (let i = 0; i < rows?.length; i++) {
-            const row = rows[i].map((x) => String(x || "").trim());
-            if (row.length === 0) continue;
-
-            const matches = row.filter((cell) =>
-              expectedHeaders.some(
-                (expected) => cell.toLowerCase() === expected.toLowerCase()
-              )
-            );
-
-            if (matches.length >= 2) {
-              foundHeaders = true;
-              messageApi.open({
-                type: "success",
-                content: `Заголовки найдены на строке ${i + 1}`,
-              });
-              setUploadedHeaders(row);
-              setUploadedData(rows?.slice(i + 1));
-              setIsMappingModalOpen(true);
-              break;
-            }
-          }
-          if (foundHeaders) break;
-        }
-
-        if (!foundHeaders) {
-          messageApi.open({
-            type: "error",
-            content: "Не удалось найти строки с заголовками в Excel",
-          });
-        }
-
-        onSuccess?.();
-      } catch (err) {
-        console.error(err);
-        messageApi.open({
-          type: "error",
-          content: "Ошибка при чтении Excel файла",
-        });
-      }
-    };
-
-    reader.readAsArrayBuffer(f);
-  };
-
-//  useEffect(() => {
-//    const handleDragOver = (e: DragEvent) => {
-//      e.preventDefault();
-//      if (
-//        e.dataTransfer?.items &&
-//        Array.from(e.dataTransfer.items).some(
-//          (item) =>
-//            item.kind === "file" &&
-//            item.type.match(
-//              /sheet|excel|officedocument\.spreadsheetml|spreadsheetml\.sheet/
-//            )
-//        )
-//      ) {
-//        setIsDragOver(true);
-//      }
-//    };
-
-//    const handleDragLeave = () => setIsDragOver(false);
-
-//    const handleDrop = (e: DragEvent) => {
-//      e.preventDefault();
-//      setIsDragOver(false);
-
-//      const file = e.dataTransfer?.files?.[0];
-//      if (file && /\.(xlsx|xls)$/i.test(file.name)) {
-//        handleExcelFile(file);
-//      } else {
-//        messageApi.warning(
-//          "Пожалуйста, перетащите Excel файл (.xlsx или .xls)"
-//        );
-//      }
-//    };
-
-//    window.addEventListener("dragover", handleDragOver);
-//    window.addEventListener("dragleave", handleDragLeave);
-//    window.addEventListener("drop", handleDrop);
-
-//    return () => {
-//      window.removeEventListener("dragover", handleDragOver);
-//      window.removeEventListener("dragleave", handleDragLeave);
-//      window.removeEventListener("drop", handleDrop);
-//    };
-//  }, []);
-
   useEffect(() => {
     if (rowsData && rowsData.length) {
       setRows(rowsData);
@@ -208,12 +100,51 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
     });
   };
 
+  function excelDateToJSDate(serial: number) {
+  // Excel считает с 1900-01-00
+  const utc_days = Math.floor(serial - 25569);
+  const utc_value = utc_days * 86400;
+  const date_info = new Date(utc_value * 1000);
+  const fractional_day = serial - Math.floor(serial);
+  const total_seconds = Math.floor(86400 * fractional_day);
+  const seconds = total_seconds % 60;
+  const hours = Math.floor(total_seconds / 3600);
+  const minutes = Math.floor(total_seconds / 60) % 60;
+  return dayjs(
+    new Date(
+      date_info.getFullYear(),
+      date_info.getMonth(),
+      date_info.getDate(),
+      hours,
+      minutes,
+      seconds
+    )
+  ).toISOString();
+}
+
   const handleAddRow = async () => {
+	console.log(fields)
     const newRow = {
       values: fields.map((f) => ({
         field_id: f.field_id,
         data_type: f.data_type,
-        value: { value: "" },
+		//default_value: f.default_value,
+		//is_nullable: true,
+        value: {
+          value:
+            f.default_value === "bool"
+              ? "false"
+              : f.default_value === "int"
+              ? "0"
+              : f.default_value === "string"
+              ? "Введите значение"
+              : f.default_value === "choice"
+              ? "Введите значение"
+              : f.default_value === "datetime"
+              ? dayjs().toISOString()
+              : "",
+			//id: f.choices[0]?.choice_id
+        },
       })),
     };
     await addRow({ table_id: Number(tableId) || 0, rows: [newRow] });
@@ -236,20 +167,21 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
             colIndex !== -1 ? rowArr[colIndex] ?? "" : f.default_value ?? "";
 
           let parsedValue = rawValue;
-          if (f.data_type === "int" || f.data_type === "float")
+          if (f.default_value === "int" || f.default_value === "float")
             parsedValue = Number(rawValue) || 0;
-          if (f.data_type === "bool")
+          if (f.default_value === "bool")
             parsedValue =
               rawValue === true ||
               rawValue === "true" ||
               rawValue === "1" ||
-              rawValue === "да";
-          if (f.data_type === "datetime" && rawValue)
-            parsedValue = dayjs(rawValue).toISOString();
+              rawValue === "Да";
+          if (f.default_value === "datetime" && rawValue)
+            parsedValue = excelDateToJSDate(rawValue);
 
           return {
             field_id: f.field_id,
             data_type: f.data_type,
+			default_value: f.default_value,
             value: { value: String(parsedValue) },
           };
         }),
@@ -266,7 +198,7 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
   const renderEditor = (field: FieldType, row: Row) => {
     const cell = row.values.find((v) => v.field_id === field.field_id);
     const value = cell?.value?.value;
-    switch (field.data_type) {
+    switch (field.default_value) {
       case "int":
         return (
           <InputNumber
@@ -306,7 +238,7 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
       case "bool":
         return (
           <Checkbox
-            checked={!!value}
+            checked={value === "true"}
             onChange={(e) => handleValueChangeServer(row.row_id)}
           />
         );

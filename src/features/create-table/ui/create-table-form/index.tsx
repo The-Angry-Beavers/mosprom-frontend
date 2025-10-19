@@ -1,11 +1,11 @@
-import { Form } from 'antd';
-import { useEffect, useState } from 'react';
-import { CreateBaseFields } from './ui/create-base-fields';
-import { CreateColumnsFields } from './ui/create-columns-fields';
-import { useCreateTable, type CreateTableDto } from '@/entity';
-import { v4 as uuidv4 } from 'uuid';
-import { useMovetoTable } from '@/entity/namespace';
-import { useParams } from 'react-router-dom';
+import { Form } from "antd";
+import { useEffect, useState } from "react";
+import { CreateBaseFields } from "./ui/create-base-fields";
+import { CreateColumnsFields } from "./ui/create-columns-fields";
+import { useCreateTable, type CreateTableDto } from "@/entity";
+import { v4 as uuidv4 } from "uuid";
+import { useMovetoTable } from "@/entity/namespace";
+import { useParams } from "react-router-dom";
 
 export const CreateTableForm = ({
   namespace,
@@ -31,11 +31,22 @@ export const CreateTableForm = ({
   const { mutate } = useCreateTable(handleCallback);
 
   const onFinish = (values: CreateTableDto) => {
-    console.log('✅ Result:', values);
+    console.log("✅ Result:", values);
     form.resetFields();
     setStep(0);
+    const convertDataTypesToString = (
+      table: CreateTableDto
+    ): CreateTableDto => ({
+      ...table,
+      fields: table.fields.map((f) => ({
+        ...f,
+		default_value: f.data_type === "choice" ? "string" : f.data_type,
+        data_type: "string",
+        choices: f.choices.map((c) => ({ ...c })),
+      })),
+    });
     mutate({
-      ...values,
+      ...convertDataTypesToString(values),
       name: uuidv4(),
     });
     handleClose?.();
@@ -55,27 +66,27 @@ export const CreateTableForm = ({
       layout="vertical"
       form={form}
       onFinish={onFinish}
-      style={{ paddingTop: '24px' }}
+      style={{ paddingTop: "24px" }}
       initialValues={{
         namespace,
         templateId: 0,
         fields: [
           {
             id: 1,
-            name: 'Новая колонка',
-            verbose_name: 'Новая колонка',
-            data_type: 'string',
+            name: "Новая колонка",
+            verbose_name: "Новая колонка",
+            data_type: "string",
             is_nullable: false,
-            default_value: '',
+            default_value: "",
             choices: [],
           },
         ],
       }}
     >
-      <div style={{ display: step === 0 ? 'block' : 'none' }}>
+      <div style={{ display: step === 0 ? "block" : "none" }}>
         <CreateBaseFields form={form} nextStep={() => setStep(step + 1)} />
       </div>
-      <div style={{ display: step === 1 ? 'block' : 'none' }}>
+      <div style={{ display: step === 1 ? "block" : "none" }}>
         <CreateColumnsFields
           isReset={isReset}
           form={form}

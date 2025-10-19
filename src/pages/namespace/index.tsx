@@ -5,7 +5,7 @@ import type { ColumnsType } from 'antd/es/table';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState } from 'react';
 import { CreateModal } from '@/features/create-table';
-import { useDeleteTable, useGetALlNamespace, useGetNamespace } from '@/entity';
+import { useDeleteTable, useGetALlNamespace } from '@/entity';
 
 
 type Props = {
