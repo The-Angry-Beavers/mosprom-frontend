@@ -1,7 +1,12 @@
 import type { NamespaceType } from "@/entity";
 import { Card, Flex } from "antd";
 import css from "./namespaceCard.module.scss";
-import { FolderOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  DeleteOutlined,
+  FolderOutlined,
+  PlusOutlined,
+} from "@ant-design/icons";
+import { useDeleteNamespace } from "@/entity/namespace/api";
 type Props = {
   namespace: NamespaceType;
   addCard?: boolean;
@@ -10,7 +15,12 @@ type Props = {
 
 export const NamespaceCard = ({ namespace, addCard, onClick }: Props) => {
   return (
-    <Card className={css.card} onClick={onClick}>
+    <Card
+      className={css.card}
+      onClick={() => {
+        onClick?.();
+      }}
+    >
       <Flex gap={5} align="center" justify="center">
         {addCard ? (
           <PlusOutlined className={css.icon} />

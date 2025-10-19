@@ -20,6 +20,10 @@ class NamespaceService {
   async createNamespace(dto: CreateTableDto) {
     return await axiosWithAuth.post<NamespaceType>(API_URL.namespace(), dto);
   }
+
+  async deleteNamespace(id: number) {
+	return await axiosWithAuth.delete<NamespaceType>(API_URL.namespace(`/${id}`));
+  }
 }
 
 export const namespaceService = new NamespaceService();

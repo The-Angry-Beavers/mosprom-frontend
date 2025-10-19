@@ -55,9 +55,7 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
   const [mapping, setMapping] = useState<Record<string, string>>({});
   const [isMappingModalOpen, setIsMappingModalOpen] = useState(false);
 
-  const [isDragOver, setIsDragOver] = useState(false);
-
-  const handleExcelFile = (file: File, onSuccess?: () => void) => {
+  const handleExcelFile = (file: any, onSuccess?: () => void) => {
     const f = file as File;
     const reader = new FileReader();
 
@@ -65,7 +63,7 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
       try {
         const data = new Uint8Array(e.target?.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: "array" });
-		
+
         let foundHeaders = false;
         const allSheets = workbook.SheetNames.map((sheetName) => {
           const sheet = workbook.Sheets[sheetName];
@@ -121,49 +119,49 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
     reader.readAsArrayBuffer(f);
   };
 
-  useEffect(() => {
-    const handleDragOver = (e: DragEvent) => {
-      e.preventDefault();
-      if (
-        e.dataTransfer?.items &&
-        Array.from(e.dataTransfer.items).some(
-          (item) =>
-            item.kind === "file" &&
-            item.type.match(
-              /sheet|excel|officedocument\.spreadsheetml|spreadsheetml\.sheet/
-            )
-        )
-      ) {
-        setIsDragOver(true);
-      }
-    };
+//  useEffect(() => {
+//    const handleDragOver = (e: DragEvent) => {
+//      e.preventDefault();
+//      if (
+//        e.dataTransfer?.items &&
+//        Array.from(e.dataTransfer.items).some(
+//          (item) =>
+//            item.kind === "file" &&
+//            item.type.match(
+//              /sheet|excel|officedocument\.spreadsheetml|spreadsheetml\.sheet/
+//            )
+//        )
+//      ) {
+//        setIsDragOver(true);
+//      }
+//    };
 
-    const handleDragLeave = () => setIsDragOver(false);
+//    const handleDragLeave = () => setIsDragOver(false);
 
-    const handleDrop = (e: DragEvent) => {
-      e.preventDefault();
-      setIsDragOver(false);
+//    const handleDrop = (e: DragEvent) => {
+//      e.preventDefault();
+//      setIsDragOver(false);
 
-      const file = e.dataTransfer?.files?.[0];
-      if (file && /\.(xlsx|xls)$/i.test(file.name)) {
-        handleExcelFile(file);
-      } else {
-        messageApi.warning(
-          "Пожалуйста, перетащите Excel файл (.xlsx или .xls)"
-        );
-      }
-    };
+//      const file = e.dataTransfer?.files?.[0];
+//      if (file && /\.(xlsx|xls)$/i.test(file.name)) {
+//        handleExcelFile(file);
+//      } else {
+//        messageApi.warning(
+//          "Пожалуйста, перетащите Excel файл (.xlsx или .xls)"
+//        );
+//      }
+//    };
 
-    window.addEventListener("dragover", handleDragOver);
-    window.addEventListener("dragleave", handleDragLeave);
-    window.addEventListener("drop", handleDrop);
+//    window.addEventListener("dragover", handleDragOver);
+//    window.addEventListener("dragleave", handleDragLeave);
+//    window.addEventListener("drop", handleDrop);
 
-    return () => {
-      window.removeEventListener("dragover", handleDragOver);
-      window.removeEventListener("dragleave", handleDragLeave);
-      window.removeEventListener("drop", handleDrop);
-    };
-  }, []);
+//    return () => {
+//      window.removeEventListener("dragover", handleDragOver);
+//      window.removeEventListener("dragleave", handleDragLeave);
+//      window.removeEventListener("drop", handleDrop);
+//    };
+//  }, []);
 
   useEffect(() => {
     if (rowsData && rowsData.length) {
@@ -364,23 +362,6 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
   return (
     <Flex vertical gap={20}>
       {contextHolder}
-      {isDragOver && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.4)",
-            color: "white",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: 24,
-            zIndex: 10000,
-          }}
-        >
-          Отпустите, чтобы загрузить Excel 📄
-        </div>
-      )}
       <h1>{name}</h1>
 
       <Flex gap={8}>
@@ -388,9 +369,65 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
           accept=".xlsx,.xls"
           showUploadList={false}
           customRequest={({ file, onSuccess }) => {
-            const realFile = (file as any).originFileObj || file;
-            handleExcelFile(realFile as File);
-            onSuccess?.(null);
+            const f = file as File;
+            const reader = new FileReader();
+
+            reader.onload = (e) => {
+              try {
+                const data = new Uint8Array(e.target?.result as ArrayBuffer);
+                const workbook = XLSX.read(data, { type: "array" });
+
+                let foundHeaders = false;
+                const allSheets = workbook.SheetNames.map((sheetName) => {
+                  const sheet = workbook.Sheets[sheetName];
+                  const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                  return { sheetName, rows: json };
+                });
+
+                const expectedHeaders = fields.map((f) => f.name);
+
+                for (const { rows } of allSheets) {
+                  for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i].map((x: any) => String(x || "").trim());
+                    if (row.length === 0) continue;
+
+                    const matches = row.filter((cell) =>
+                      expectedHeaders.some(
+                        (expected) =>
+                          cell.toLowerCase() === expected.toLowerCase()
+                      )
+                    );
+
+                    if (matches.length >= 2) {
+                      foundHeaders = true;
+                      setUploadedHeaders(row);
+                      setUploadedData(rows.slice(i + 1));
+                      setIsMappingModalOpen(true);
+                      break;
+                    }
+                  }
+                  if (foundHeaders) break;
+                }
+
+                if (!foundHeaders) {
+                  messageApi.open({
+                    type: "error",
+                    content:
+                      "Ошибка: не удалось найти строки с заголовками. Excel не соответствует формату.",
+                  });
+                }
+
+                onSuccess?.(null);
+              } catch (err) {
+                console.error(err);
+                messageApi.open({
+                  type: "error",
+                  content: "Ошибка при чтении Excel файла",
+                });
+              }
+            };
+
+            reader.readAsArrayBuffer(f);
           }}
         >
           <Button icon={<UploadOutlined />}>Загрузить Excel файл</Button>
@@ -434,7 +471,7 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
                   setMapping((prev) => ({ ...prev, [h]: v || "" }))
                 }
                 options={fields.map((f) => ({
-                  label: f.verbose_name,
+                  label: f.name,
                   value: f.name,
                 }))}
                 style={{ width: 250 }}

@@ -1,7 +1,7 @@
-import { namespaceService } from '@/shared/api/services/namespace.service';
-import { QUERY_KEY } from '@/shared/config/querykey';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { CreateTableDto, NamespaceMoveDto } from './type';
+import { namespaceService } from "@/shared/api/services/namespace.service";
+import { QUERY_KEY } from "@/shared/config/querykey";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import type { CreateTableDto, NamespaceMoveDto } from "./type";
 
 export const useGetALlNamespace = () => {
   const query = useQuery({
@@ -34,7 +34,7 @@ export const useCreateNamespace = (callback?: () => void) => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEY.GET_ALL_NAMESPACES],
       });
-      typeof callback === 'function' && callback?.();
+      typeof callback === "function" && callback?.();
     },
   });
 
@@ -48,6 +48,22 @@ export const useMovetoTable = () => {
     mutationKey: [QUERY_KEY.MOVE_NAMESPACE_TABLE],
     mutationFn: async (dto: NamespaceMoveDto) =>
       await namespaceService.moveTabletoNamespace(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEY.GET_ALL_NAMESPACES],
+      });
+    },
+  });
+
+  return mutation;
+};
+
+export const useDeleteNamespace = () => {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationKey: [QUERY_KEY.GET_ALL_NAMESPACES],
+    mutationFn: async (id: number) =>
+      await namespaceService.deleteNamespace(id),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEY.GET_ALL_NAMESPACES],
