@@ -36,7 +36,7 @@ type Props = {
 };
 
 export const TablePage = ({ columnsData, rowsData, name }: Props) => {
-  const [rows, setRows] = useState(rowsData);
+  const [rows, setRows] = useState(rowsData || []);
   const fields = columnsData;
   const { tableId } = useParams();
   const { mutate: addRow, isPending: isAdding } = useAddTableRow(
@@ -65,7 +65,7 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
       try {
         const data = new Uint8Array(e.target?.result as ArrayBuffer);
         const workbook = XLSX.read(data, { type: "array" });
-
+		
         let foundHeaders = false;
         const allSheets = workbook.SheetNames.map((sheetName) => {
           const sheet = workbook.Sheets[sheetName];
@@ -168,36 +168,45 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
   useEffect(() => {
     if (rowsData && rowsData.length) {
       setRows(rowsData);
-    }
+    } else setRows([]);
   }, [rowsData]);
 
-  const handleValueChange = async (
+  const handleValueChangeLocal = (
     rowId: number,
     fieldId: number,
     newValue: any
   ) => {
-    const newRows = rows?.map((r) =>
-      r.row_id === rowId
-        ? {
-            ...r,
-            values: r.values.map((v) =>
-              v.field_id === fieldId ? { ...v, value: { value: newValue } } : v
-            ),
-          }
-        : r
+    setRows((prevRows) =>
+      prevRows.map((r) =>
+        r.row_id === rowId
+          ? {
+              ...r,
+              values: r.values.map((v) =>
+                v.field_id === fieldId
+                  ? { ...v, value: { value: newValue } }
+                  : v
+              ),
+            }
+          : r
+      )
     );
-	setRows(newRows);
+  };
+
+  const handleValueChangeServer = async (rowId: number) => {
+    const row = rows.find((r) => r.row_id === rowId);
+    if (!row) return;
 
     await updateRow({
       table_id: Number(tableId) || 0,
-      updated_rows:
-        newRows.map((r) => ({
-          row_id: r.row_id,
-          new_values: r.values.map((v) => ({
+      updated_rows: [
+        {
+          row_id: row.row_id,
+          new_values: row.values.map((v) => ({
             field_id: v.field_id,
-            value: v.value,
+            value: { value: String(v.value.value) },
           })),
-        })) || [],
+        },
+      ],
     });
   };
 
@@ -217,36 +226,38 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
   };
 
   const handleImportConfirm = () => {
-    const mapped = uploadedData.map((rowArr: any[], index: number) => ({
-      row_id: rows?.length + index + 1,
-      values: fields.map((f) => {
-        const excelHeader = Object.keys(mapping).find(
-          (key) => mapping[key] === f.name
-        );
-        const colIndex = uploadedHeaders.indexOf(excelHeader || "");
-        const rawValue =
-          colIndex !== -1 ? rowArr[colIndex] ?? "" : f.default_value ?? "";
+    const mapped = uploadedData
+      .map((rowArr: any[], index: number) => ({
+        row_id: rows?.length + index + 1,
+        values: fields.map((f) => {
+          const excelHeader = Object.keys(mapping).find(
+            (key) => mapping[key] === f.name
+          );
+          const colIndex = uploadedHeaders.indexOf(excelHeader || "");
+          const rawValue =
+            colIndex !== -1 ? rowArr[colIndex] ?? "" : f.default_value ?? "";
 
-        let parsedValue = rawValue;
-        if (f.data_type === "int" || f.data_type === "float")
-          parsedValue = Number(rawValue) || 0;
-        if (f.data_type === "bool")
-          parsedValue =
-            rawValue === true ||
-            rawValue === "true" ||
-            rawValue === "1" ||
-            rawValue === "да";
-        if (f.data_type === "datetime" && rawValue)
-          parsedValue = dayjs(rawValue).toISOString();
+          let parsedValue = rawValue;
+          if (f.data_type === "int" || f.data_type === "float")
+            parsedValue = Number(rawValue) || 0;
+          if (f.data_type === "bool")
+            parsedValue =
+              rawValue === true ||
+              rawValue === "true" ||
+              rawValue === "1" ||
+              rawValue === "да";
+          if (f.data_type === "datetime" && rawValue)
+            parsedValue = dayjs(rawValue).toISOString();
 
-        return {
-          field_id: f.field_id,
-          data_type: f.data_type,
-          value: { value: parsedValue },
-        };
-      }),
-    }));
-
+          return {
+            field_id: f.field_id,
+            data_type: f.data_type,
+            value: { value: String(parsedValue) },
+          };
+        }),
+      }))
+      .filter((item) => item.values.every((v) => !!v.value.value));
+    addRow({ table_id: Number(tableId) || 0, rows: mapped });
     setIsMappingModalOpen(false);
     messageApi.open({
       type: "success",
@@ -262,7 +273,10 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
         return (
           <InputNumber
             value={value}
-            onBlur={(v) => handleValueChange(row.row_id, field.field_id, v)}
+            onBlur={(v) => handleValueChangeServer(row.row_id)}
+            onChange={(v) =>
+              handleValueChangeLocal(row.row_id, field.field_id, v)
+            }
             style={{ width: "100%" }}
           />
         );
@@ -271,7 +285,9 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
           return (
             <Select
               value={value}
-              onChange={(v) => handleValueChange(row.row_id, field.field_id, v)}
+              onChange={(v) => {
+                handleValueChangeServer(row.row_id);
+              }}
               options={field.choices.map((c: string) => ({
                 label: c,
                 value: c,
@@ -283,8 +299,9 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
         return (
           <Input
             value={value}
-            onBlur={(e) =>
-              handleValueChange(row.row_id, field.field_id, e.target.value)
+            onBlur={(e) => handleValueChangeServer(row.row_id)}
+            onChange={(e) =>
+              handleValueChangeLocal(row.row_id, field.field_id, e.target.value)
             }
           />
         );
@@ -292,22 +309,14 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
         return (
           <Checkbox
             checked={!!value}
-            onChange={(e) =>
-              handleValueChange(row.row_id, field.field_id, e.target.checked)
-            }
+            onChange={(e) => handleValueChangeServer(row.row_id)}
           />
         );
       case "datetime":
         return (
           <DatePicker
             value={value ? dayjs(value) : null}
-            onChange={(d) =>
-              handleValueChange(
-                row.row_id,
-                field.field_id,
-                d ? d.toISOString() : null
-              )
-            }
+            onChange={(d) => handleValueChangeServer(row.row_id)}
             style={{ width: "100%" }}
           />
         );
@@ -338,18 +347,19 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
     },
   ];
 
-  const dataSource = rows?.map((r) => {
-    const obj: Row & { [key: string]: string | number } = {
-      key: r.row_id,
-      id: r.row_id,
-      ...r,
-    };
-    fields.forEach((field) => {
-      const v = r.values.find((v) => v.field_id === field.field_id);
-      obj[field.name] = v ? v.value?.value : "";
-    });
-    return obj;
-  });
+  const dataSource =
+    rows?.map((r) => {
+      const obj: Row & { [key: string]: string | number } = {
+        key: r.row_id,
+        id: r.row_id,
+        ...r,
+      };
+      fields.forEach((field) => {
+        const v = r.values.find((v) => v.field_id === field.field_id);
+        obj[field.name] = v ? v.value?.value : "";
+      });
+      return obj;
+    }) || [];
 
   return (
     <Flex vertical gap={20}>
