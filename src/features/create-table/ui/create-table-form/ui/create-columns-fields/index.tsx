@@ -120,8 +120,8 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
     const { active, over } = event;
     if (active.id !== over?.id) {
       setColumns((prev) => {
-        const oldIndex = prev.findIndex((f) => f.id === active.id);
-        const newIndex = prev.findIndex((f) => f.id === over.id);
+        const oldIndex = prev.findIndex((f) => f.field_id === active.id);
+        const newIndex = prev.findIndex((f) => f.field_id === over.id);
         const newOrder = arrayMove(prev, oldIndex, newIndex);
         form.setFieldsValue({ fields: newOrder });
         return newOrder;
@@ -143,7 +143,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
 
       const updatedField = { ...field, choices: newOrder };
       const updatedColumns = columns.map((f) =>
-        f.id === updatedField.id ? updatedField : f
+        f.field_id === updatedField.field_id ? updatedField : f
       );
 
       setSelectField(updatedField);
@@ -154,7 +154,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
 
   const handleAddColumn = () => {
     const newField: FieldType = {
-      id: columns.length + Math.random(),
+      field_id: columns.length + Math.random(),
       name: 'Новая колонка',
       verbose_name: 'Новая колонка',
       data_type: 'string',
@@ -169,7 +169,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
   };
 
   const handleDeleteColumn = (id: number) => {
-    const newList = columns.filter((f) => f.id !== id);
+    const newList = columns.filter((f) => f.field_id !== id);
     setColumns(newList);
     form.setFieldsValue({ fields: newList });
     setSelectField(null);
@@ -184,7 +184,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
     setSelectField(updatedField);
 
     const updatedColumns = columns.map((col) =>
-      col.id === updatedField.id ? updatedField : col
+      col.field_id === updatedField.field_id ? updatedField : col
     );
     setColumns(updatedColumns);
     form.setFieldsValue({ fields: updatedColumns });
@@ -250,17 +250,17 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
                   onDragEnd={handleDragEnd}
                 >
                   <SortableContext
-                    items={columns.map((col) => col.id)}
+                    items={columns.map((col) => col.field_id)}
                     strategy={verticalListSortingStrategy}
                   >
                     {columns.map((col) => {
                       return (
                         <SortableColumn
-                          isActive={selectField?.id === col.id}
+                          isActive={selectField?.field_id === col.field_id}
                           onClick={() => setSelectField(col)}
-                          onHandleDelete={() => handleDeleteColumn(col.id)}
-                          key={col.id}
-                          id={col.id}
+                          onHandleDelete={() => handleDeleteColumn(col.field_id)}
+                          key={col.field_id}
+                          id={col.field_id}
                           children={
                             <div
                               className={cn(css.field_name)}
@@ -293,7 +293,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
                 label="Название столбца"
                 name={[
                   'fields',
-                  `${columns.findIndex((c) => c.id === selectField.id)}`,
+                  `${columns.findIndex((c) => c.field_id === selectField.field_id)}`,
                   'name',
                 ]}
                 rules={[
@@ -326,7 +326,7 @@ export const CreateColumnsFields = ({ nextStep, form }: Props) => {
                 <Form.List
                   name={[
                     'fields',
-                    `${columns.findIndex((c) => c.id === selectField.id)}`,
+                    `${columns.findIndex((c) => c.field_id === selectField.field_id)}`,
                     'choices',
                   ]}
                 >

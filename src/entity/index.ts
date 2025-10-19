@@ -1,4 +1,4 @@
-export { type NamespaceType, useGetALlNamespace } from './namespace';
+export { type NamespaceType, useGetALlNamespace, useGetNamespace } from './namespace';
 export {
   type CreateTableDto,
   type FieldType,

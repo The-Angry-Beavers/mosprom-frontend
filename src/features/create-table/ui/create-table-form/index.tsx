@@ -3,19 +3,39 @@ import { useState } from 'react';
 import { CreateBaseFields } from './ui/create-base-fields';
 import { CreateColumnsFields } from './ui/create-columns-fields';
 import { useCreateTable, type CreateTableDto } from '@/entity';
+import { v4 as uuidv4 } from 'uuid';
+import { useMovetoTable } from '@/entity/namespace';
+import { useParams } from 'react-router-dom';
 
-export const CreateTableForm = ({ namespace }: { namespace: string }) => {
+export const CreateTableForm = ({
+  namespace,
+  handleClose,
+  onNotify,
+}: {
+  namespace: string;
+  handleClose?: () => void;
+  onNotify?: () => void;
+}) => {
   const [step, setStep] = useState(0);
   const [form] = Form.useForm<CreateTableDto>();
+  const {namespaceId} = useParams();
 
-  const { mutate } = useCreateTable();
+  const { mutate: moveToTable } = useMovetoTable();
+
+  const handleCallback = (table_id: number) => {
+    moveToTable({ table_id, target_namespace_id: Number(namespaceId) || 0 });
+    onNotify?.();
+  };
+
+  const { mutate } = useCreateTable(handleCallback);
 
   const onFinish = (values: CreateTableDto) => {
     console.log('✅ Result:', values);
     mutate({
       ...values,
-      verbose_name: values.name,
+      name: uuidv4(),
     });
+    handleClose?.();
   };
 
   return (

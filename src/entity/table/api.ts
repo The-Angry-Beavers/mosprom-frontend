@@ -2,11 +2,15 @@ import { tableService } from '@/shared/api';
 import { QUERY_KEY } from '@/shared/config/querykey';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { CreateTableDto } from './type';
-import type { AddRowData, DeleteRowData, UpdateRowData } from "@/entity/table/type";
+import type {
+  AddRowData,
+  DeleteRowData,
+  UpdateRowData,
+} from '@/entity/table/type';
 
 export const useGetAllTables = () => {
   const query = useQuery({
-    queryKey: [QUERY_KEY.GET_ALL_TABLES],
+    queryKey: [QUERY_KEY.GET_NAMESPACE],
     queryFn: async () => await tableService.getTables(),
     select: (data) => data.data,
   });
@@ -83,16 +87,27 @@ export const useUpdateTableRow = (id: number) => {
   return mutation;
 };
 
-export const useCreateTable = () => {
+export const useCreateTable = (callback?: (table_id: number) => void) => {
+  const queryClient = useQueryClient();
+
   const mutation = useMutation({
     mutationKey: [QUERY_KEY.CREATE_TABLE],
-    mutationFn: async (dto: CreateTableDto) => await tableService.createTable(dto),
+    mutationFn: async (dto: CreateTableDto) =>
+      await tableService.createTable(dto),
+
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEY.GET_ALL_TABLES],
+      });
+      
+      typeof callback === 'function' && callback?.(data.data.table_id || 0);
+    },
   });
 
   return mutation;
 };
 
-export const useDeleteTable = () => {
+export const useDeleteTable = (callback?: () => void) => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -103,6 +118,8 @@ export const useDeleteTable = () => {
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEY.GET_ALL_TABLES],
       });
+
+      typeof callback === 'function' && callback?.();
     },
   });
 

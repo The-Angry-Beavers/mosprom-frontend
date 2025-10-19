@@ -11,3 +11,8 @@ export type CreateTableDto = {
   name: string;
   description: string;
 };
+
+export type NamespaceMoveDto = {
+  target_namespace_id: number;
+  table_id: number;
+};

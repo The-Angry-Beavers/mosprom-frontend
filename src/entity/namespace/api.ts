@@ -1,12 +1,23 @@
 import { namespaceService } from '@/shared/api/services/namespace.service';
 import { QUERY_KEY } from '@/shared/config/querykey';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { CreateTableDto } from './type';
+import type { CreateTableDto, NamespaceMoveDto } from './type';
 
 export const useGetALlNamespace = () => {
   const query = useQuery({
     queryKey: [QUERY_KEY.GET_ALL_NAMESPACES],
-    queryFn: () => namespaceService.getAllNamespaces(),
+    queryFn: async() => await namespaceService.getAllNamespaces(),
+    select: (data) => data.data,
+  });
+
+  return query;
+};
+
+
+export const useGetNamespace = (id: string) => {
+  const query = useQuery({
+    queryKey: [QUERY_KEY.GET_ALL_NAMESPACES],
+    queryFn: async () => await namespaceService.getNamespaceById(id),
     select: (data) => data.data,
   });
 
@@ -26,6 +37,17 @@ export const useCreateNamespace = (callback?: () => void) => {
       });
       typeof callback === 'function' && callback?.();
     },
+  });
+
+  return mutation;
+};
+
+export const useMovetoTable = () => {
+
+  const mutation = useMutation({
+    mutationKey: [QUERY_KEY.GET_ALL_NAMESPACES],
+    mutationFn: async (dto: NamespaceMoveDto) =>
+      await namespaceService.moveTabletoNamespace(dto),
   });
 
   return mutation;
