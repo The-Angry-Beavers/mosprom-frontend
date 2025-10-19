@@ -72,7 +72,7 @@ const columns: ColumnsType = [
     key: 'delete',
     render: (cell) => {
       return (
-        <DeleteCell tableId={cell.table_id} cellKey={cell.key} key={cell.key} />
+        <DeleteCell tableId={cell.id} cellKey={cell.key} key={cell.key} />
       );
     },
   },
@@ -88,8 +88,8 @@ export const NameSpacePage = () => {
   return (
     <div>
       <Flex align="center" justify="space-between">
-        <h1 className="namespaceTitle">Тестовый проект</h1>
-        <CreateModal namespace="Тестовый проект" />
+        <h1 className="namespaceTitle">{namespace?.name}</h1>
+        <CreateModal namespace={namespace?.name || ''} />
       </Flex>
       {isLoading && !data && (
         <Flex gap={10} vertical>
@@ -98,12 +98,12 @@ export const NameSpacePage = () => {
           <Skeleton.Node className="namespace-skeleton" />
         </Flex>
       )}
-      {namespace?.tables.length && !isLoading && (
+      {!!namespace?.tables && namespace.tables.length > 0 && !isLoading && (
         <Table
           dataSource={namespace.tables}
           columns={columns}
           onRow={(record) => ({
-            onClick: () => navigate(`/table/${record.table_id}`),
+            onClick: () => navigate(`/table/${record.id}`),
           })}
           pagination={false}
         />

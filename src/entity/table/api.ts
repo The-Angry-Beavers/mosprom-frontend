@@ -100,7 +100,7 @@ export const useCreateTable = (callback?: (table_id: number) => void) => {
         queryKey: [QUERY_KEY.GET_ALL_TABLES],
       });
       
-      typeof callback === 'function' && callback?.(data.data.table_id || 0);
+      typeof callback === 'function' && callback?.(data.data.id || 0);
     },
   });
 

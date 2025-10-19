@@ -23,6 +23,7 @@ export const CreateTableForm = ({
   const { mutate: moveToTable } = useMovetoTable();
 
   const handleCallback = (table_id: number) => {
+	if (!table_id) return
     moveToTable({ table_id, target_namespace_id: Number(namespaceId) || 0 });
     onNotify?.();
   };
