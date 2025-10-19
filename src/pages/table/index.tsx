@@ -35,7 +35,7 @@ type Props = {
   canEdit: boolean;
 };
 
-export const TablePage = ({ columnsData, rowsData, name }: Props) => {
+export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
   const [rows, setRows] = useState(rowsData || []);
   const fields = columnsData;
   const { tableId } = useParams();
@@ -101,35 +101,35 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
   };
 
   function excelDateToJSDate(serial: number) {
-  // Excel считает с 1900-01-00
-  const utc_days = Math.floor(serial - 25569);
-  const utc_value = utc_days * 86400;
-  const date_info = new Date(utc_value * 1000);
-  const fractional_day = serial - Math.floor(serial);
-  const total_seconds = Math.floor(86400 * fractional_day);
-  const seconds = total_seconds % 60;
-  const hours = Math.floor(total_seconds / 3600);
-  const minutes = Math.floor(total_seconds / 60) % 60;
-  return dayjs(
-    new Date(
-      date_info.getFullYear(),
-      date_info.getMonth(),
-      date_info.getDate(),
-      hours,
-      minutes,
-      seconds
-    )
-  ).toISOString();
-}
+    // Excel считает с 1900-01-00
+    const utc_days = Math.floor(serial - 25569);
+    const utc_value = utc_days * 86400;
+    const date_info = new Date(utc_value * 1000);
+    const fractional_day = serial - Math.floor(serial);
+    const total_seconds = Math.floor(86400 * fractional_day);
+    const seconds = total_seconds % 60;
+    const hours = Math.floor(total_seconds / 3600);
+    const minutes = Math.floor(total_seconds / 60) % 60;
+    return dayjs(
+      new Date(
+        date_info.getFullYear(),
+        date_info.getMonth(),
+        date_info.getDate(),
+        hours,
+        minutes,
+        seconds
+      )
+    ).toISOString();
+  }
 
   const handleAddRow = async () => {
-	console.log(fields)
+    console.log(fields);
     const newRow = {
       values: fields.map((f) => ({
         field_id: f.field_id,
         data_type: f.data_type,
-		//default_value: f.default_value,
-		//is_nullable: true,
+        //default_value: f.default_value,
+        //is_nullable: true,
         value: {
           value:
             f.default_value === "bool"
@@ -143,7 +143,7 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
               : f.default_value === "datetime"
               ? dayjs().toISOString()
               : "",
-			//id: f.choices[0]?.choice_id
+          //id: f.choices[0]?.choice_id
         },
       })),
     };
@@ -181,7 +181,7 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
           return {
             field_id: f.field_id,
             data_type: f.data_type,
-			default_value: f.default_value,
+            default_value: f.default_value,
             value: { value: String(parsedValue) },
           };
         }),
@@ -207,6 +207,7 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
             onChange={(v) =>
               handleValueChangeLocal(row.row_id, field.field_id, v)
             }
+            readOnly={!canEdit}
             style={{ width: "100%" }}
           />
         );
@@ -215,6 +216,7 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
           return (
             <Select
               value={value}
+              disabled={!canEdit}
               onChange={(v) => {
                 handleValueChangeServer(row.row_id);
               }}
@@ -229,6 +231,7 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
         return (
           <Input
             value={value}
+            readOnly={!canEdit}
             onBlur={(e) => handleValueChangeServer(row.row_id)}
             onChange={(e) =>
               handleValueChangeLocal(row.row_id, field.field_id, e.target.value)
@@ -238,6 +241,7 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
       case "bool":
         return (
           <Checkbox
+            disabled={!canEdit}
             checked={value === "true"}
             onChange={(e) => handleValueChangeServer(row.row_id)}
           />
@@ -245,6 +249,7 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
       case "datetime":
         return (
           <DatePicker
+            disabled={!canEdit}
             value={value ? dayjs(value) : null}
             onChange={(d) => handleValueChangeServer(row.row_id)}
             style={{ width: "100%" }}
@@ -271,7 +276,7 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
         <Button
           danger
           icon={<DeleteOutlined />}
-          onClick={() => handleDeleteRow(row.row_id)}
+          onClick={() => canEdit && handleDeleteRow(row.row_id)}
         />
       ),
     },
@@ -374,9 +379,11 @@ export const TablePage = ({ columnsData, rowsData, name }: Props) => {
         loading={isAdding || isDeleting || isUpdating}
         bordered
       />
-      <Button type="dashed" icon={<PlusOutlined />} onClick={handleAddRow}>
-        Добавить строку
-      </Button>
+      {canEdit && (
+        <Button type="dashed" icon={<PlusOutlined />} onClick={handleAddRow}>
+          Добавить строку
+        </Button>
+      )}
       <Modal
         open={isMappingModalOpen}
         title="Сопоставление колонок"

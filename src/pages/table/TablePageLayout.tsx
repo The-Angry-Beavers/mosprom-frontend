@@ -40,7 +40,7 @@ export const TablePageLayout = () => {
       columnsData={data?.data?.fields || []}
       rowsData={rows?.data?.rows || []}
       name={data?.data?.verbose_name || ''}
-      canEdit={false}
+      canEdit={true}
     />
   );
 };
