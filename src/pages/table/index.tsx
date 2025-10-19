@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Table,
   Input,
@@ -12,21 +12,22 @@ import {
   Upload,
   Modal,
   Space,
-} from "antd";
-import dayjs from "dayjs";
+  Alert,
+} from 'antd';
+import dayjs from 'dayjs';
 import {
   DeleteOutlined,
   PlusOutlined,
   UploadOutlined,
-} from "@ant-design/icons";
-import * as XLSX from "xlsx";
-import type { FieldType, Row } from "@/entity";
+} from '@ant-design/icons';
+import * as XLSX from 'xlsx';
+import type { FieldType, Row } from '@/entity';
 import {
   useAddTableRow,
   useDeleteTableRow,
   useUpdateTableRow,
-} from "@/entity/table/api";
-import { useParams } from "react-router-dom";
+} from '@/entity/table/api';
+import { useParams } from 'react-router-dom';
 
 type Props = {
   rowsData: Row[];
@@ -132,17 +133,17 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
         //is_nullable: true,
         value: {
           value:
-            f.default_value === "bool"
-              ? "false"
-              : f.default_value === "int"
-              ? "0"
-              : f.default_value === "string"
-              ? "Введите значение"
-              : f.default_value === "choice"
-              ? "Введите значение"
-              : f.default_value === "datetime"
+            f.default_value === 'bool'
+              ? 'false'
+              : f.default_value === 'int'
+              ? '0'
+              : f.default_value === 'string'
+              ? 'Введите значение'
+              : f.default_value === 'choice'
+              ? 'Введите значение'
+              : f.default_value === 'datetime'
               ? dayjs().toISOString()
-              : "",
+              : '',
           //id: f.choices[0]?.choice_id
         },
       })),
@@ -162,20 +163,20 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
           const excelHeader = Object.keys(mapping).find(
             (key) => mapping[key] === f.name
           );
-          const colIndex = uploadedHeaders.indexOf(excelHeader || "");
+          const colIndex = uploadedHeaders.indexOf(excelHeader || '');
           const rawValue =
-            colIndex !== -1 ? rowArr[colIndex] ?? "" : f.default_value ?? "";
+            colIndex !== -1 ? rowArr[colIndex] ?? '' : f.default_value ?? '';
 
           let parsedValue = rawValue;
-          if (f.default_value === "int" || f.default_value === "float")
+          if (f.default_value === 'int' || f.default_value === 'float')
             parsedValue = Number(rawValue) || 0;
-          if (f.default_value === "bool")
+          if (f.default_value === 'bool')
             parsedValue =
               rawValue === true ||
-              rawValue === "true" ||
-              rawValue === "1" ||
-              rawValue === "Да";
-          if (f.default_value === "datetime" && rawValue)
+              rawValue === 'true' ||
+              rawValue === '1' ||
+              rawValue === 'Да';
+          if (f.default_value === 'datetime' && rawValue)
             parsedValue = excelDateToJSDate(rawValue);
 
           return {
@@ -190,8 +191,8 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
     addRow({ table_id: Number(tableId) || 0, rows: mapped });
     setIsMappingModalOpen(false);
     messageApi.open({
-      type: "success",
-      content: "Данные успешно импортированы",
+      type: 'success',
+      content: 'Данные успешно импортированы',
     });
   };
 
@@ -199,7 +200,7 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
     const cell = row.values.find((v) => v.field_id === field.field_id);
     const value = cell?.value?.value;
     switch (field.default_value) {
-      case "int":
+      case 'int':
         return (
           <InputNumber
             value={value}
@@ -208,10 +209,10 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
               handleValueChangeLocal(row.row_id, field.field_id, v)
             }
             readOnly={!canEdit}
-            style={{ width: "100%" }}
+            style={{ width: '100%' }}
           />
         );
-      case "string":
+      case 'string':
         if (field.choices?.length) {
           return (
             <Select
@@ -224,7 +225,7 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
                 label: c,
                 value: c,
               }))}
-              style={{ width: "100%" }}
+              style={{ width: '100%' }}
             />
           );
         }
@@ -238,21 +239,21 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
             }
           />
         );
-      case "bool":
+      case 'bool':
         return (
           <Checkbox
             disabled={!canEdit}
-            checked={value === "true"}
+            checked={value === 'true'}
             onChange={(e) => handleValueChangeServer(row.row_id)}
           />
         );
-      case "datetime":
+      case 'datetime':
         return (
           <DatePicker
             disabled={!canEdit}
             value={value ? dayjs(value) : null}
             onChange={(d) => handleValueChangeServer(row.row_id)}
-            style={{ width: "100%" }}
+            style={{ width: '100%' }}
           />
         );
       default:
@@ -268,9 +269,9 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
       render: (_, row: Row) => renderEditor(field, row),
     })),
     {
-      title: "Действия",
-      key: "actions",
-      align: "center",
+      title: 'Действия',
+      key: 'actions',
+      align: 'center',
       width: 100,
       render: (_, row: Row) => (
         <Button
@@ -291,7 +292,7 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
       };
       fields.forEach((field) => {
         const v = r.values.find((v) => v.field_id === field.field_id);
-        obj[field.name] = v ? v.value?.value : "";
+        obj[field.name] = v ? v.value?.value : '';
       });
       return obj;
     }) || [];
@@ -300,6 +301,16 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
     <Flex vertical gap={20}>
       {contextHolder}
       <h1>{name}</h1>
+
+      {!canEdit && (
+        <Alert
+          message="Внимание"
+          showIcon
+          description="Таблица редактируется другим сотрудником"
+          type="warning"
+          style={{ width: 400 }}
+        />
+      )}
 
       <Flex gap={8}>
         <Upload
@@ -312,7 +323,7 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
             reader.onload = (e) => {
               try {
                 const data = new Uint8Array(e.target?.result as ArrayBuffer);
-                const workbook = XLSX.read(data, { type: "array" });
+                const workbook = XLSX.read(data, { type: 'array' });
 
                 let foundHeaders = false;
                 const allSheets = workbook.SheetNames.map((sheetName) => {
@@ -325,7 +336,7 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
 
                 for (const { rows } of allSheets) {
                   for (let i = 0; i < rows.length; i++) {
-                    const row = rows[i].map((x: any) => String(x || "").trim());
+                    const row = rows[i].map((x: any) => String(x || '').trim());
                     if (row.length === 0) continue;
 
                     const matches = row.filter((cell) =>
@@ -348,9 +359,9 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
 
                 if (!foundHeaders) {
                   messageApi.open({
-                    type: "error",
+                    type: 'error',
                     content:
-                      "Ошибка: не удалось найти строки с заголовками. Excel не соответствует формату.",
+                      'Ошибка: не удалось найти строки с заголовками. Excel не соответствует формату.',
                   });
                 }
 
@@ -358,8 +369,8 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
               } catch (err) {
                 console.error(err);
                 messageApi.open({
-                  type: "error",
-                  content: "Ошибка при чтении Excel файла",
+                  type: 'error',
+                  content: 'Ошибка при чтении Excel файла',
                 });
               }
             };
@@ -407,7 +418,7 @@ export const TablePage = ({ columnsData, rowsData, name, canEdit }: Props) => {
                 allowClear
                 value={mapping[h]}
                 onChange={(v) =>
-                  setMapping((prev) => ({ ...prev, [h]: v || "" }))
+                  setMapping((prev) => ({ ...prev, [h]: v || '' }))
                 }
                 options={fields.map((f) => ({
                   label: f.name,
