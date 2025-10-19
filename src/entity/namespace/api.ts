@@ -6,13 +6,12 @@ import type { CreateTableDto, NamespaceMoveDto } from './type';
 export const useGetALlNamespace = () => {
   const query = useQuery({
     queryKey: [QUERY_KEY.GET_ALL_NAMESPACES],
-    queryFn: async() => await namespaceService.getAllNamespaces(),
+    queryFn: async () => await namespaceService.getAllNamespaces(),
     select: (data) => data.data,
   });
 
   return query;
 };
-
 
 export const useGetNamespace = (id: string) => {
   const query = useQuery({
@@ -43,11 +42,17 @@ export const useCreateNamespace = (callback?: () => void) => {
 };
 
 export const useMovetoTable = () => {
+  const queryClient = useQueryClient();
 
   const mutation = useMutation({
-    mutationKey: [QUERY_KEY.GET_ALL_NAMESPACES],
+    mutationKey: [QUERY_KEY.MOVE_NAMESPACE_TABLE],
     mutationFn: async (dto: NamespaceMoveDto) =>
       await namespaceService.moveTabletoNamespace(dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEY.GET_ALL_NAMESPACES],
+      });
+    },
   });
 
   return mutation;

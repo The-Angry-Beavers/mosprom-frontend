@@ -97,13 +97,12 @@ export const useCreateTable = (callback?: (table_id: number) => void) => {
 
     onSuccess: (data) => {
 
-      console.log({data});
+
+      typeof callback === 'function' && callback?.(data.data.id || 0);
 
       queryClient.invalidateQueries({
         queryKey: [QUERY_KEY.GET_ALL_NAMESPACES],
       });
-      
-      typeof callback === 'function' && callback?.(data.data.id || 0);
     },
   });
 

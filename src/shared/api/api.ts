@@ -3,9 +3,9 @@ import {
   getAccessToken,
   removeFromStorage,
 } from './services/auth/authToken.service';
-import { authService } from './services/auth/auth.service';
+
 import { errorCatch, getContentType } from './api.helpers';
-import { API_URL } from '../config/apiUrl';
+
 
 const options: CreateAxiosDefaults = {
   baseURL: 'https://d5df28gmfmto92a1iqoc.bixf7e87.apigw.yandexcloud.net/api',

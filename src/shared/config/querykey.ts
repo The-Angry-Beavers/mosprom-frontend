@@ -20,4 +20,9 @@ export const QUERY_KEY = {
 
   GET_ME: 'get-me',
   GET_ALL_USERS: 'get-all-users',
+
+  GET_SESSIONS: 'get-sessions',
+  GET_SESSIONS_ME: 'get-sessions-me',
+  CLOSE_SESSION: 'close-session',
+  CONNECT_SESSION: 'connect-session',
 };

@@ -5,4 +5,5 @@ export const API_URL = {
   user: (url = '') => API_URL.root(`/users${url}`),
   namespace: (url = '') => API_URL.root(`/namespaces${url}`),
   tables: (url = '') => API_URL.root(`/tables${url}`),
+  session: (url = '') => API_URL.root(`/sessions${url}`),
 };
